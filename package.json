@@ -35,7 +35,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tikudev/ramda-reactive.git"
   },
   "dependencies": {
     "ramda": "^0.28.0"
