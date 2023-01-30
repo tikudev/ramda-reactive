@@ -1,0 +1,46 @@
+{
+  "name": "ramda-reactive",
+  "version": "1.0.0",
+  "description": "ramda, but everything is reactive",
+  "scripts": {
+    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup"
+  },
+  "keywords": [
+    "ramda",
+    "reactify",
+    "vue chemistry",
+    "vue",
+    "composition api",
+    "vueuse"
+  ],
+  "author": "Tim Kutscha",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@types/jest": "^29.2.6",
+    "@types/node": "^18.11.18",
+    "babel-jest": "^29.3.1",
+    "eslint": "^8.32.0",
+    "jest": "^29.3.1",
+    "vue": "^3.2.45"
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "ramda": "^0.28.0"
+  },
+  "peerDependencies": {
+    "vue": "^2.7.0 || >=3.0.0"
+  }
+}
