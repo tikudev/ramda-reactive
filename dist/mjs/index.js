@@ -1,18 +1,178 @@
 import { computed, unref } from 'vue';
-import { add, addIndex, adjust, all, allPass, and, andThen, any, anyPass, ap, aperture, append, apply, applySpec, applyTo, ascend, assoc, assocPath, binary, bind, both, call, chain, clamp, clone, collectBy, comparator, complement, compose, composeWith, concat, cond, construct, constructN, converge, count, countBy, curry, curryN, dec, defaultTo, descend, difference, differenceWith, dissoc, dissocPath, divide, drop, dropLast, dropLastWhile, dropRepeats, dropRepeatsWith, dropWhile, either, empty, endsWith, eqBy, eqProps, equals, evolve, filter, find, findIndex, findLast, findLastIndex, flatten, flip, forEach, forEachObjIndexed, fromPairs, groupBy, groupWith, gt, gte, has, hasIn, hasPath, head, identical, identity, ifElse, inc, includes, indexBy, indexOf, init, innerJoin, insert, insertAll, intersection, intersperse, into, invert, invertObj, invoker, is, isEmpty, isNil, join, juxt, keys, keysIn, last, lastIndexOf, length, lens, lensIndex, lensPath, lensProp, lift, liftN, lt, lte, map, mapAccum, mapAccumRight, mapObjIndexed, match, mathMod, max, maxBy, mean, median, memoizeWith, mergeAll, mergeDeepLeft, mergeDeepRight, mergeDeepWith, mergeDeepWithKey, mergeLeft, mergeRight, mergeWith, mergeWithKey, min, minBy, modify, modifyPath, modulo, move, multiply, nAry, negate, none, not, nth, nthArg, o, objOf, of, omit, on, once, or, otherwise, over, pair, partial, partialObject, partialRight, partition, path, pathEq, pathOr, pathSatisfies, paths, pick, pickAll, pickBy, pipe, pipeWith, pluck, prepend, product, project, promap, prop, propEq, propIs, propOr, propSatisfies, props, range, reduce, reduceBy, reduceRight, reduceWhile, reduced, reject, remove, repeat, replace, reverse, scan, sequence, set, slice, sort, sortBy, sortWith, split, splitAt, splitEvery, splitWhen, splitWhenever, startsWith, subtract, sum, symmetricDifference, symmetricDifferenceWith, tail, take, takeLast, takeLastWhile, takeWhile, tap, test, thunkify, times, toLower, toPairs, toPairsIn, toString, toUpper, transduce, transpose, traverse, trim, tryCatch, type, unapply, unary, uncurryN, unfold, union, unionWith, uniq, uniqBy, uniqWith, unless, unnest, until, unwind, update, useWith, values, valuesIn, view, when, where, whereAny, whereEq, without, xor, xprod, zip, zipObj, zipWith, } from 'ramda';
+import { add, adjust, all, allPass, and, any, anyPass, ap, aperture, append, apply, applySpec, applyTo, ascend, assoc, assocPath, binary, bind, both, call, chain, clamp, clone, collectBy, comparator, complement, compose, composeWith, concat, cond, construct, constructN, converge, count, countBy, curry, curryN, dec, defaultTo, descend, difference, differenceWith, dissoc, dissocPath, divide, drop, dropLast, dropLastWhile, dropRepeats, dropRepeatsWith, dropWhile, either, empty, endsWith, eqBy, eqProps, equals, evolve, filter, find, findIndex, findLast, findLastIndex, flatten, flip, forEach, forEachObjIndexed, fromPairs, groupBy, groupWith, gt, gte, has, hasIn, hasPath, head, identical, identity, ifElse, inc, includes, indexBy, indexOf, init, innerJoin, insert, insertAll, intersection, intersperse, into, invert, invertObj, invoker, is, isEmpty, isNil, join, juxt, keys, keysIn, last, lastIndexOf, length, lens, lensIndex, lensPath, lensProp, lift, liftN, lt, lte, map, mapAccum, mapAccumRight, mapObjIndexed, match, mathMod, max, maxBy, mean, median, memoizeWith, mergeAll, mergeDeepLeft, mergeDeepRight, mergeDeepWith, mergeDeepWithKey, mergeLeft, mergeRight, mergeWith, mergeWithKey, min, minBy, modify, modifyPath, modulo, move, multiply, nAry, negate, none, not, nth, nthArg, o, objOf, of, omit, on, once, or, otherwise, over, pair, partial, partialObject, partialRight, partition, path, pathEq, pathOr, pathSatisfies, paths, pick, pickAll, pickBy, pipe, pipeWith, pluck, prepend, product, project, promap, prop, propEq, propIs, propOr, propSatisfies, props, range, reduce, reduceBy, reduceRight, reduceWhile, reduced, reject, remove, repeat, replace, reverse, scan, sequence, set, slice, sort, sortBy, sortWith, split, splitAt, splitEvery, splitWhen, splitWhenever, startsWith, subtract, sum, symmetricDifference, symmetricDifferenceWith, tail, take, takeLast, takeLastWhile, takeWhile, tap, test, thunkify, times, toLower, toPairs, toPairsIn, toString, toUpper, transduce, transpose, traverse, trim, tryCatch, type, unapply, unary, uncurryN, unfold, union, unionWith, uniq, uniqBy, uniqWith, unless, unnest, until, unwind, update, useWith, values, valuesIn, view, when, where, whereAny, whereEq, without, xor, xprod, zip, zipObj, zipWith, } from 'ramda';
 const reactifyCurried = fn => curryN(fn.length, (...args) => computed(() => fn.apply(undefined, args.map(unref))));
-const unrefFirstParamPredicate = fn => (pred, ...rest) => fn((...predArgs) => unref(pred(...predArgs)), ...rest);
-const unrefFirstParamListPredicate = fn => (predList, ...rest) => fn(predList.map(pred => (...predArgs) => unref(pred(...predArgs))), ...rest);
-const unrefAllParamPredicate = fn => (...params) => fn(...params.map(pred => (...predArgs) => unref(pred(...predArgs))));
+const unrefFirstParam = fn => (first, ...rest) => fn((...innerFnArgs) => unref(first(...innerFnArgs)), ...rest);
+const unrefSecondParam = fn => (first, second, ...rest) => fn(first, (...innerFnArgs) => unref(second(...innerFnArgs)), ...rest);
+const unrefFirstParamList = fn => (predList, ...rest) => fn(predList.map(pred => (...innerFnArgs) => unref(pred(...innerFnArgs))), ...rest);
+const unrefAllParams = fn => (...params) => fn(...params.map(pred => (...innerFnArgs) => unref(pred(...innerFnArgs))));
+/**
+ * A number, or a string containing a number.
+ * @typedef {(number|string)} NumberLike
+ */
+/**
+ * A Ref contains a value and can be used for reactive programming
+ * @template T
+ * @typedef {Object} Ref
+ * @property {T} value
+ */
+/**
+ * A ComputedRef contains a value and can be used for reactive programming
+ * This value can not be set.
+ * @template T
+ * @typedef {Object} ComputedRef
+ * @property {T} value
+ */
+/**
+ * Either a Ref containing a type or the the type itself
+ * @template T
+ * @typedef {(Ref<T> | T)} MaybeRef
+ */
+/**
+ * Adds two values.
+ *
+ * @func
+ * @category Math
+ * @sig Number -> Number -> Number
+ * @param {MaybeRef<Number>} a
+ * @param {MaybeRef<Number>} b
+ * @return {ComputedRef<Number>}
+ * @see R.subtract
+ * @example
+ *
+ *      const a = ref(2)
+ *      const b = ref(3)
+ *      const c = useAdd(2, 3)      //=>  c.value === 5
+ *      b.value++                   //=>  c.value === 6
+ *
+ */
 export const useAdd = reactifyCurried(add);
-export const useAddIndex = reactifyCurried(addIndex);
+/**
+ * Applies a function to the value at the given index of an array, returning a
+ * new copy of the array with the element at the given index replaced with the
+ * result of the function application.
+ *
+ * @func
+ * @category List
+ * @sig Number -> (a -> a) -> [a] -> [a]
+ * @param {MaybeRef<Number} idx The index.
+ * @param {MaybeRef<Function>} fn The function to apply.
+ * @param {MaybeRef<Array|Arguments>} list An array-like object whose value
+ *        at the supplied index will be replaced.
+ * @return {ComputedRef<Array>} A copy of the supplied array-like object with
+ *         the element at index `idx` replaced with the value
+ *         returned by applying `fn` to the existing element.
+ * @see R.update
+ * @example
+ *      const reactiveIndex = ref(1)
+ *      const computedList = useAdjust(reactiveIndex, R.toUpper, ['a', 'b', 'c', 'd']) //=> ['a', 'B', 'c', 'd']
+ *      reactiveIndex.value = -1   //=> ['a', 'b', 'c', 'D']
+ */
 export const useAdjust = reactifyCurried(adjust);
+/**
+ * Returns the first argument if it is falsy, otherwise the second argument.
+ * Acts as the boolean `and` statement if both inputs are `Boolean`s.
+ *
+ * @func
+ * @memberOf R
+ * @since v0.1.0
+ * @category Logic
+ * @sig a -> b -> a | b
+ * @param {MaybeRef<any>} a
+ * @param {MaybeRef<any>} b
+ * @return {ComputedRef<Any>}
+ * @see R.both, R.or
+ * @example
+ *
+ *      const a = ref(true)
+ *      const b = ref(false)
+ *      const c = useAnd(a, b) //=> c.value === false
+ *      b.value = true //=> c.value === true
+ */
 export const useAnd = reactifyCurried(and);
-export const useAndThen = reactifyCurried(andThen);
+/**
+ * ap applies a list of functions to a list of values.
+ *
+ * Dispatches to the `ap` method of the second argument, if present. Also
+ * treats curried functions as applicatives.
+ *
+ * @func
+ * @memberOf R
+ * @since v0.3.0
+ * @category Function
+ * @sig [a -> b] -> [a] -> [b]
+ * @sig Apply f => f (a -> b) -> f a -> f b
+ * @sig (r -> a -> b) -> (r -> a) -> (r -> b)
+ * @param {MaybeRef<*>} applyF
+ * @param {MaybeRef<*>} applyX
+ * @return {ComputedRef<*>}
+ * @example
+ *
+ *      const reactiveList = ref([1, 2, 3])
+ *      const computedList = useAp([R.multiply(2), R.add(3)], reactiveList) //=> [2, 4, 6, 4, 5, 6]
+ *      reactiveList.value = ref([2, 4]) // => [4, 8, 5, 7]
+ */
 export const useAp = reactifyCurried(ap);
+/**
+ * Returns a new list, composed of n-tuples of consecutive elements. If `n` is
+ * greater than the length of the list, an empty list is returned.
+ *
+ * Acts as a transducer if a transformer is given in list position.
+ *
+ * @func
+ * @category List
+ * @sig Number -> [a] -> [[a]]
+ * @param {MaybeRef<Number>} n The size of the tuples to create
+ * @param {MaybeRef<Array>} list The list to split into `n`-length tuples
+ * @return {ComputedRef<Array>} The resulting list of `n`-length tuples
+ * @see R.transduce
+ * @example
+ *      const a = ref(2)
+ *      const b = ref([1, 2, 3, 4, 5])
+ *      const c = useAperture(a,b)      //=> c.value === [[1, 2], [2, 3], [3, 4], [4, 5]]
+ *      a.value = 3                     //=> c.value === [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+ *      a.value = 7                     //=> c.value === []
+ */
 export const useAperture = reactifyCurried(aperture);
+/**
+ * Returns a new list containing the contents of the given list, followed by
+ * the given element.
+ *
+ * @func
+ * @category List
+ * @sig a -> [a] -> [a]
+ * @param {MaybeRef<*>} el The element to add to the end of the new list.
+ * @param {MaybeRef<Array>} list The list of elements to add a new item to.
+ *        list.
+ * @return {ComputedRef<Array>} A new list containing the elements of the old list followed by `el`.
+ * @see R.prepend
+ * @example
+ *      const a = ref('tests')
+ *      const b = ref(['write', 'more'])
+ *      const c = useAppend(a, b)  //=> c.value === ['write', 'more', 'tests']
+ *      a.value = ['tests']     //=> c.value === ['write', 'more', ['tests']]
+ *      b.value = []            //=> c.value === [['tests']]
+ */
 export const useAppend = reactifyCurried(append);
+/**
+ * Applies function `fn` to the argument list `args`. This is useful for
+ * creating a fixed-arity function from a variadic function. `fn` should be a
+ * bound function if context is significant.
+ *
+ * @func
+ * @category Function
+ * @sig (*... -> a) -> [*] -> a
+ * @param {MaybeRef<Function>} fn The function which will be called with `args`
+ * @param {MaybeRef<Array>} args The arguments to call `fn` with
+ * @return {ComputedRef<*>} result The result, equivalent to `fn(...args)`
+ * @see R.call, R.unapply
+ * @example
+ *
+ *      const nums = [1, 2, 3, -99, 42, 6, 7];
+ *      R.apply(Math.max, nums); //=> 42
+ * @symb R.apply(f, [a, b, c]) = f(a, b, c)
+ */
 export const useApply = reactifyCurried(apply);
+// export const useApply = reactifyCurried(unrefSecondParam(apply))
 export const useApplySpec = reactifyCurried(applySpec);
 export const useApplyTo = reactifyCurried(applyTo);
 export const useAscend = reactifyCurried(ascend);
@@ -222,42 +382,42 @@ export const useXor = reactifyCurried(xor);
 export const useXprod = reactifyCurried(xprod);
 export const useZip = reactifyCurried(zip);
 export const useZipObj = reactifyCurried(zipObj);
-export const useAll = reactifyCurried(unrefFirstParamPredicate(all));
-export const useAny = reactifyCurried(unrefFirstParamPredicate(any));
-export const useComparator = reactifyCurried(unrefFirstParamPredicate(comparator));
-export const useCount = reactifyCurried(unrefFirstParamPredicate(count));
-export const useDifferenceWith = reactifyCurried(unrefFirstParamPredicate(differenceWith));
-export const useDropLastWhile = reactifyCurried(unrefFirstParamPredicate(dropLastWhile));
-export const useDropRepeatsWith = reactifyCurried(unrefFirstParamPredicate(dropRepeatsWith));
-export const useDropWhile = reactifyCurried(unrefFirstParamPredicate(dropWhile));
-export const useFilter = reactifyCurried(unrefFirstParamPredicate(filter));
-export const useFind = reactifyCurried(unrefFirstParamPredicate(find));
-export const useFindIndex = reactifyCurried(unrefFirstParamPredicate(findIndex));
-export const useFindLast = reactifyCurried(unrefFirstParamPredicate(findLast));
-export const useFindLastIndex = reactifyCurried(unrefFirstParamPredicate(findLastIndex));
-export const useGroupWith = reactifyCurried(unrefFirstParamPredicate(groupWith));
-export const useIfElse = reactifyCurried(unrefFirstParamPredicate(ifElse));
-export const useInnerJoin = reactifyCurried(unrefFirstParamPredicate(innerJoin));
-export const useNone = reactifyCurried(unrefFirstParamPredicate(none));
-export const usePartition = reactifyCurried(unrefFirstParamPredicate(partition));
-export const usePathSatisfies = reactifyCurried(unrefFirstParamPredicate(pathSatisfies));
-export const usePickBy = reactifyCurried(unrefFirstParamPredicate(pickBy));
-export const usePropSatisfies = reactifyCurried(unrefFirstParamPredicate(propSatisfies));
-export const useReduceWhile = reactifyCurried(unrefFirstParamPredicate(reduceWhile));
-export const useReject = reactifyCurried(unrefFirstParamPredicate(reject));
-export const useSortBy = reactifyCurried(unrefFirstParamPredicate(sortBy));
-export const useSplitWhen = reactifyCurried(unrefFirstParamPredicate(splitWhen));
-export const useSplitWhenever = reactifyCurried(unrefFirstParamPredicate(splitWhenever));
-export const useSymmetricDifferenceWith = reactifyCurried(unrefFirstParamPredicate(symmetricDifferenceWith));
-export const useTakeLastWhile = reactifyCurried(unrefFirstParamPredicate(takeLastWhile));
-export const useTakeWhile = reactifyCurried(unrefFirstParamPredicate(takeWhile));
-export const useUnionWith = reactifyCurried(unrefFirstParamPredicate(unionWith));
-export const useUniqWith = reactifyCurried(unrefFirstParamPredicate(uniqWith));
-export const useUnless = reactifyCurried(unrefFirstParamPredicate(unless));
-export const useUntil = reactifyCurried(unrefFirstParamPredicate(until));
-export const useWhen = reactifyCurried(unrefFirstParamPredicate(when));
-export const useZipWith = reactifyCurried(unrefFirstParamPredicate(zipWith));
-export const useAllPass = reactifyCurried(unrefFirstParamListPredicate(allPass));
-export const useAnyPass = reactifyCurried(unrefFirstParamListPredicate(anyPass));
-export const useBoth = reactifyCurried(unrefAllParamPredicate(both));
-export const useEither = reactifyCurried(unrefAllParamPredicate(either));
+export const useAll = reactifyCurried(unrefFirstParam(all));
+export const useAny = reactifyCurried(unrefFirstParam(any));
+export const useComparator = reactifyCurried(unrefFirstParam(comparator));
+export const useCount = reactifyCurried(unrefFirstParam(count));
+export const useDifferenceWith = reactifyCurried(unrefFirstParam(differenceWith));
+export const useDropLastWhile = reactifyCurried(unrefFirstParam(dropLastWhile));
+export const useDropRepeatsWith = reactifyCurried(unrefFirstParam(dropRepeatsWith));
+export const useDropWhile = reactifyCurried(unrefFirstParam(dropWhile));
+export const useFilter = reactifyCurried(unrefFirstParam(filter));
+export const useFind = reactifyCurried(unrefFirstParam(find));
+export const useFindIndex = reactifyCurried(unrefFirstParam(findIndex));
+export const useFindLast = reactifyCurried(unrefFirstParam(findLast));
+export const useFindLastIndex = reactifyCurried(unrefFirstParam(findLastIndex));
+export const useGroupWith = reactifyCurried(unrefFirstParam(groupWith));
+export const useIfElse = reactifyCurried(unrefFirstParam(ifElse));
+export const useInnerJoin = reactifyCurried(unrefFirstParam(innerJoin));
+export const useNone = reactifyCurried(unrefFirstParam(none));
+export const usePartition = reactifyCurried(unrefFirstParam(partition));
+export const usePathSatisfies = reactifyCurried(unrefFirstParam(pathSatisfies));
+export const usePickBy = reactifyCurried(unrefFirstParam(pickBy));
+export const usePropSatisfies = reactifyCurried(unrefFirstParam(propSatisfies));
+export const useReduceWhile = reactifyCurried(unrefFirstParam(reduceWhile));
+export const useReject = reactifyCurried(unrefFirstParam(reject));
+export const useSortBy = reactifyCurried(unrefFirstParam(sortBy));
+export const useSplitWhen = reactifyCurried(unrefFirstParam(splitWhen));
+export const useSplitWhenever = reactifyCurried(unrefFirstParam(splitWhenever));
+export const useSymmetricDifferenceWith = reactifyCurried(unrefFirstParam(symmetricDifferenceWith));
+export const useTakeLastWhile = reactifyCurried(unrefFirstParam(takeLastWhile));
+export const useTakeWhile = reactifyCurried(unrefFirstParam(takeWhile));
+export const useUnionWith = reactifyCurried(unrefFirstParam(unionWith));
+export const useUniqWith = reactifyCurried(unrefFirstParam(uniqWith));
+export const useUnless = reactifyCurried(unrefFirstParam(unless));
+export const useUntil = reactifyCurried(unrefFirstParam(until));
+export const useWhen = reactifyCurried(unrefFirstParam(when));
+export const useZipWith = reactifyCurried(unrefFirstParam(zipWith));
+export const useAllPass = reactifyCurried(unrefFirstParamList(allPass));
+export const useAnyPass = reactifyCurried(unrefFirstParamList(anyPass));
+export const useBoth = reactifyCurried(unrefAllParams(both));
+export const useEither = reactifyCurried(unrefAllParams(either));

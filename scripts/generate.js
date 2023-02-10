@@ -127,4 +127,4 @@ ${allParamsPredicate.map(reactifyAllParamsPred).join('\n')}
   `
 }
 
-fs.writeFileSync('./src/index.js', generateFile())
+fs.writeFileSync('./src/index_generated.js', generateFile())

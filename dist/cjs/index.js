@@ -1,26 +1,186 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFlip = exports.useFlatten = exports.useEvolve = exports.useEquals = exports.useEqProps = exports.useEqBy = exports.useEndsWith = exports.useEmpty = exports.useDropRepeats = exports.useDropLast = exports.useDrop = exports.useDivide = exports.useDissocPath = exports.useDissoc = exports.useDifference = exports.useDescend = exports.useDefaultTo = exports.useDec = exports.useCurryN = exports.useCurry = exports.useCountBy = exports.useConverge = exports.useConstructN = exports.useConstruct = exports.useCond = exports.useConcat = exports.useComposeWith = exports.useCompose = exports.useComplement = exports.useCollectBy = exports.useClone = exports.useClamp = exports.useChain = exports.useCall = exports.useBind = exports.useBinary = exports.useAssocPath = exports.useAssoc = exports.useAscend = exports.useApplyTo = exports.useApplySpec = exports.useApply = exports.useAppend = exports.useAperture = exports.useAp = exports.useAndThen = exports.useAnd = exports.useAdjust = exports.useAddIndex = exports.useAdd = void 0;
-exports.useMax = exports.useMathMod = exports.useMatch = exports.useMapObjIndexed = exports.useMapAccumRight = exports.useMapAccum = exports.useMap = exports.useLte = exports.useLt = exports.useLiftN = exports.useLift = exports.useLensProp = exports.useLensPath = exports.useLensIndex = exports.useLens = exports.useLength = exports.useLastIndexOf = exports.useLast = exports.useKeysIn = exports.useKeys = exports.useJuxt = exports.useJoin = exports.useIsNil = exports.useIsEmpty = exports.useIs = exports.useInvoker = exports.useInvertObj = exports.useInvert = exports.useInto = exports.useIntersperse = exports.useIntersection = exports.useInsertAll = exports.useInsert = exports.useInit = exports.useIndexOf = exports.useIndexBy = exports.useIncludes = exports.useInc = exports.useIdentity = exports.useIdentical = exports.useHead = exports.useHasPath = exports.useHasIn = exports.useHas = exports.useGte = exports.useGt = exports.useGroupBy = exports.useFromPairs = exports.useForEachObjIndexed = exports.useForEach = void 0;
-exports.useProject = exports.useProduct = exports.usePrepend = exports.usePluck = exports.usePipeWith = exports.usePipe = exports.usePickAll = exports.usePick = exports.usePaths = exports.usePathOr = exports.usePathEq = exports.usePath = exports.usePartialRight = exports.usePartialObject = exports.usePartial = exports.usePair = exports.useOver = exports.useOtherwise = exports.useOr = exports.useOnce = exports.useOn = exports.useOmit = exports.useOf = exports.useObjOf = exports.useO = exports.useNthArg = exports.useNth = exports.useNot = exports.useNegate = exports.useNAry = exports.useMultiply = exports.useMove = exports.useModulo = exports.useModifyPath = exports.useModify = exports.useMinBy = exports.useMin = exports.useMergeWithKey = exports.useMergeWith = exports.useMergeRight = exports.useMergeLeft = exports.useMergeDeepWithKey = exports.useMergeDeepWith = exports.useMergeDeepRight = exports.useMergeDeepLeft = exports.useMergeAll = exports.useMemoizeWith = exports.useMedian = exports.useMean = exports.useMaxBy = void 0;
-exports.useUnfold = exports.useUncurryN = exports.useUnary = exports.useUnapply = exports.useType = exports.useTryCatch = exports.useTrim = exports.useTraverse = exports.useTranspose = exports.useTransduce = exports.useToUpper = exports.useToString = exports.useToPairsIn = exports.useToPairs = exports.useToLower = exports.useTimes = exports.useThunkify = exports.useTest = exports.useTap = exports.useTakeLast = exports.useTake = exports.useTail = exports.useSymmetricDifference = exports.useSum = exports.useSubtract = exports.useStartsWith = exports.useSplitEvery = exports.useSplitAt = exports.useSplit = exports.useSortWith = exports.useSort = exports.useSlice = exports.useSet = exports.useSequence = exports.useScan = exports.useReverse = exports.useReplace = exports.useRepeat = exports.useRemove = exports.useReduced = exports.useReduceRight = exports.useReduceBy = exports.useReduce = exports.useRange = exports.useProps = exports.usePropOr = exports.usePropIs = exports.usePropEq = exports.useProp = exports.usePromap = void 0;
-exports.useUnless = exports.useUniqWith = exports.useUnionWith = exports.useTakeWhile = exports.useTakeLastWhile = exports.useSymmetricDifferenceWith = exports.useSplitWhenever = exports.useSplitWhen = exports.useSortBy = exports.useReject = exports.useReduceWhile = exports.usePropSatisfies = exports.usePickBy = exports.usePathSatisfies = exports.usePartition = exports.useNone = exports.useInnerJoin = exports.useIfElse = exports.useGroupWith = exports.useFindLastIndex = exports.useFindLast = exports.useFindIndex = exports.useFind = exports.useFilter = exports.useDropWhile = exports.useDropRepeatsWith = exports.useDropLastWhile = exports.useDifferenceWith = exports.useCount = exports.useComparator = exports.useAny = exports.useAll = exports.useZipObj = exports.useZip = exports.useXprod = exports.useXor = exports.useWithout = exports.useWhereEq = exports.useWhereAny = exports.useWhere = exports.useView = exports.useValuesIn = exports.useValues = exports.useUseWith = exports.useUpdate = exports.useUnwind = exports.useUnnest = exports.useUniqBy = exports.useUniq = exports.useUnion = void 0;
-exports.useEither = exports.useBoth = exports.useAnyPass = exports.useAllPass = exports.useZipWith = exports.useWhen = exports.useUntil = void 0;
+exports.useForEachObjIndexed = exports.useForEach = exports.useFlip = exports.useFlatten = exports.useEvolve = exports.useEquals = exports.useEqProps = exports.useEqBy = exports.useEndsWith = exports.useEmpty = exports.useDropRepeats = exports.useDropLast = exports.useDrop = exports.useDivide = exports.useDissocPath = exports.useDissoc = exports.useDifference = exports.useDescend = exports.useDefaultTo = exports.useDec = exports.useCurryN = exports.useCurry = exports.useCountBy = exports.useConverge = exports.useConstructN = exports.useConstruct = exports.useCond = exports.useConcat = exports.useComposeWith = exports.useCompose = exports.useComplement = exports.useCollectBy = exports.useClone = exports.useClamp = exports.useChain = exports.useCall = exports.useBind = exports.useBinary = exports.useAssocPath = exports.useAssoc = exports.useAscend = exports.useApplyTo = exports.useApplySpec = exports.useApply = exports.useAppend = exports.useAperture = exports.useAp = exports.useAnd = exports.useAdjust = exports.useAdd = void 0;
+exports.useMean = exports.useMaxBy = exports.useMax = exports.useMathMod = exports.useMatch = exports.useMapObjIndexed = exports.useMapAccumRight = exports.useMapAccum = exports.useMap = exports.useLte = exports.useLt = exports.useLiftN = exports.useLift = exports.useLensProp = exports.useLensPath = exports.useLensIndex = exports.useLens = exports.useLength = exports.useLastIndexOf = exports.useLast = exports.useKeysIn = exports.useKeys = exports.useJuxt = exports.useJoin = exports.useIsNil = exports.useIsEmpty = exports.useIs = exports.useInvoker = exports.useInvertObj = exports.useInvert = exports.useInto = exports.useIntersperse = exports.useIntersection = exports.useInsertAll = exports.useInsert = exports.useInit = exports.useIndexOf = exports.useIndexBy = exports.useIncludes = exports.useInc = exports.useIdentity = exports.useIdentical = exports.useHead = exports.useHasPath = exports.useHasIn = exports.useHas = exports.useGte = exports.useGt = exports.useGroupBy = exports.useFromPairs = void 0;
+exports.useProp = exports.usePromap = exports.useProject = exports.useProduct = exports.usePrepend = exports.usePluck = exports.usePipeWith = exports.usePipe = exports.usePickAll = exports.usePick = exports.usePaths = exports.usePathOr = exports.usePathEq = exports.usePath = exports.usePartialRight = exports.usePartialObject = exports.usePartial = exports.usePair = exports.useOver = exports.useOtherwise = exports.useOr = exports.useOnce = exports.useOn = exports.useOmit = exports.useOf = exports.useObjOf = exports.useO = exports.useNthArg = exports.useNth = exports.useNot = exports.useNegate = exports.useNAry = exports.useMultiply = exports.useMove = exports.useModulo = exports.useModifyPath = exports.useModify = exports.useMinBy = exports.useMin = exports.useMergeWithKey = exports.useMergeWith = exports.useMergeRight = exports.useMergeLeft = exports.useMergeDeepWithKey = exports.useMergeDeepWith = exports.useMergeDeepRight = exports.useMergeDeepLeft = exports.useMergeAll = exports.useMemoizeWith = exports.useMedian = void 0;
+exports.useUniq = exports.useUnion = exports.useUnfold = exports.useUncurryN = exports.useUnary = exports.useUnapply = exports.useType = exports.useTryCatch = exports.useTrim = exports.useTraverse = exports.useTranspose = exports.useTransduce = exports.useToUpper = exports.useToString = exports.useToPairsIn = exports.useToPairs = exports.useToLower = exports.useTimes = exports.useThunkify = exports.useTest = exports.useTap = exports.useTakeLast = exports.useTake = exports.useTail = exports.useSymmetricDifference = exports.useSum = exports.useSubtract = exports.useStartsWith = exports.useSplitEvery = exports.useSplitAt = exports.useSplit = exports.useSortWith = exports.useSort = exports.useSlice = exports.useSet = exports.useSequence = exports.useScan = exports.useReverse = exports.useReplace = exports.useRepeat = exports.useRemove = exports.useReduced = exports.useReduceRight = exports.useReduceBy = exports.useReduce = exports.useRange = exports.useProps = exports.usePropOr = exports.usePropIs = exports.usePropEq = void 0;
+exports.useWhen = exports.useUntil = exports.useUnless = exports.useUniqWith = exports.useUnionWith = exports.useTakeWhile = exports.useTakeLastWhile = exports.useSymmetricDifferenceWith = exports.useSplitWhenever = exports.useSplitWhen = exports.useSortBy = exports.useReject = exports.useReduceWhile = exports.usePropSatisfies = exports.usePickBy = exports.usePathSatisfies = exports.usePartition = exports.useNone = exports.useInnerJoin = exports.useIfElse = exports.useGroupWith = exports.useFindLastIndex = exports.useFindLast = exports.useFindIndex = exports.useFind = exports.useFilter = exports.useDropWhile = exports.useDropRepeatsWith = exports.useDropLastWhile = exports.useDifferenceWith = exports.useCount = exports.useComparator = exports.useAny = exports.useAll = exports.useZipObj = exports.useZip = exports.useXprod = exports.useXor = exports.useWithout = exports.useWhereEq = exports.useWhereAny = exports.useWhere = exports.useView = exports.useValuesIn = exports.useValues = exports.useUseWith = exports.useUpdate = exports.useUnwind = exports.useUnnest = exports.useUniqBy = void 0;
+exports.useEither = exports.useBoth = exports.useAnyPass = exports.useAllPass = exports.useZipWith = void 0;
 const vue_1 = require("vue");
 const ramda_1 = require("ramda");
 const reactifyCurried = fn => (0, ramda_1.curryN)(fn.length, (...args) => (0, vue_1.computed)(() => fn.apply(undefined, args.map(vue_1.unref))));
-const unrefFirstParamPredicate = fn => (pred, ...rest) => fn((...predArgs) => (0, vue_1.unref)(pred(...predArgs)), ...rest);
-const unrefFirstParamListPredicate = fn => (predList, ...rest) => fn(predList.map(pred => (...predArgs) => (0, vue_1.unref)(pred(...predArgs))), ...rest);
-const unrefAllParamPredicate = fn => (...params) => fn(...params.map(pred => (...predArgs) => (0, vue_1.unref)(pred(...predArgs))));
+const unrefFirstParam = fn => (first, ...rest) => fn((...innerFnArgs) => (0, vue_1.unref)(first(...innerFnArgs)), ...rest);
+const unrefSecondParam = fn => (first, second, ...rest) => fn(first, (...innerFnArgs) => (0, vue_1.unref)(second(...innerFnArgs)), ...rest);
+const unrefFirstParamList = fn => (predList, ...rest) => fn(predList.map(pred => (...innerFnArgs) => (0, vue_1.unref)(pred(...innerFnArgs))), ...rest);
+const unrefAllParams = fn => (...params) => fn(...params.map(pred => (...innerFnArgs) => (0, vue_1.unref)(pred(...innerFnArgs))));
+/**
+ * A number, or a string containing a number.
+ * @typedef {(number|string)} NumberLike
+ */
+/**
+ * A Ref contains a value and can be used for reactive programming
+ * @template T
+ * @typedef {Object} Ref
+ * @property {T} value
+ */
+/**
+ * A ComputedRef contains a value and can be used for reactive programming
+ * This value can not be set.
+ * @template T
+ * @typedef {Object} ComputedRef
+ * @property {T} value
+ */
+/**
+ * Either a Ref containing a type or the the type itself
+ * @template T
+ * @typedef {(Ref<T> | T)} MaybeRef
+ */
+/**
+ * Adds two values.
+ *
+ * @func
+ * @category Math
+ * @sig Number -> Number -> Number
+ * @param {MaybeRef<Number>} a
+ * @param {MaybeRef<Number>} b
+ * @return {ComputedRef<Number>}
+ * @see R.subtract
+ * @example
+ *
+ *      const a = ref(2)
+ *      const b = ref(3)
+ *      const c = useAdd(2, 3)      //=>  c.value === 5
+ *      b.value++                   //=>  c.value === 6
+ *
+ */
 exports.useAdd = reactifyCurried(ramda_1.add);
-exports.useAddIndex = reactifyCurried(ramda_1.addIndex);
+/**
+ * Applies a function to the value at the given index of an array, returning a
+ * new copy of the array with the element at the given index replaced with the
+ * result of the function application.
+ *
+ * @func
+ * @category List
+ * @sig Number -> (a -> a) -> [a] -> [a]
+ * @param {MaybeRef<Number} idx The index.
+ * @param {MaybeRef<Function>} fn The function to apply.
+ * @param {MaybeRef<Array|Arguments>} list An array-like object whose value
+ *        at the supplied index will be replaced.
+ * @return {ComputedRef<Array>} A copy of the supplied array-like object with
+ *         the element at index `idx` replaced with the value
+ *         returned by applying `fn` to the existing element.
+ * @see R.update
+ * @example
+ *      const reactiveIndex = ref(1)
+ *      const computedList = useAdjust(reactiveIndex, R.toUpper, ['a', 'b', 'c', 'd']) //=> ['a', 'B', 'c', 'd']
+ *      reactiveIndex.value = -1   //=> ['a', 'b', 'c', 'D']
+ */
 exports.useAdjust = reactifyCurried(ramda_1.adjust);
+/**
+ * Returns the first argument if it is falsy, otherwise the second argument.
+ * Acts as the boolean `and` statement if both inputs are `Boolean`s.
+ *
+ * @func
+ * @memberOf R
+ * @since v0.1.0
+ * @category Logic
+ * @sig a -> b -> a | b
+ * @param {MaybeRef<any>} a
+ * @param {MaybeRef<any>} b
+ * @return {ComputedRef<Any>}
+ * @see R.both, R.or
+ * @example
+ *
+ *      const a = ref(true)
+ *      const b = ref(false)
+ *      const c = useAnd(a, b) //=> c.value === false
+ *      b.value = true //=> c.value === true
+ */
 exports.useAnd = reactifyCurried(ramda_1.and);
-exports.useAndThen = reactifyCurried(ramda_1.andThen);
+/**
+ * ap applies a list of functions to a list of values.
+ *
+ * Dispatches to the `ap` method of the second argument, if present. Also
+ * treats curried functions as applicatives.
+ *
+ * @func
+ * @memberOf R
+ * @since v0.3.0
+ * @category Function
+ * @sig [a -> b] -> [a] -> [b]
+ * @sig Apply f => f (a -> b) -> f a -> f b
+ * @sig (r -> a -> b) -> (r -> a) -> (r -> b)
+ * @param {MaybeRef<*>} applyF
+ * @param {MaybeRef<*>} applyX
+ * @return {ComputedRef<*>}
+ * @example
+ *
+ *      const reactiveList = ref([1, 2, 3])
+ *      const computedList = useAp([R.multiply(2), R.add(3)], reactiveList) //=> [2, 4, 6, 4, 5, 6]
+ *      reactiveList.value = ref([2, 4]) // => [4, 8, 5, 7]
+ */
 exports.useAp = reactifyCurried(ramda_1.ap);
+/**
+ * Returns a new list, composed of n-tuples of consecutive elements. If `n` is
+ * greater than the length of the list, an empty list is returned.
+ *
+ * Acts as a transducer if a transformer is given in list position.
+ *
+ * @func
+ * @category List
+ * @sig Number -> [a] -> [[a]]
+ * @param {MaybeRef<Number>} n The size of the tuples to create
+ * @param {MaybeRef<Array>} list The list to split into `n`-length tuples
+ * @return {ComputedRef<Array>} The resulting list of `n`-length tuples
+ * @see R.transduce
+ * @example
+ *      const a = ref(2)
+ *      const b = ref([1, 2, 3, 4, 5])
+ *      const c = useAperture(a,b)      //=> c.value === [[1, 2], [2, 3], [3, 4], [4, 5]]
+ *      a.value = 3                     //=> c.value === [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+ *      a.value = 7                     //=> c.value === []
+ */
 exports.useAperture = reactifyCurried(ramda_1.aperture);
+/**
+ * Returns a new list containing the contents of the given list, followed by
+ * the given element.
+ *
+ * @func
+ * @category List
+ * @sig a -> [a] -> [a]
+ * @param {MaybeRef<*>} el The element to add to the end of the new list.
+ * @param {MaybeRef<Array>} list The list of elements to add a new item to.
+ *        list.
+ * @return {ComputedRef<Array>} A new list containing the elements of the old list followed by `el`.
+ * @see R.prepend
+ * @example
+ *      const a = ref('tests')
+ *      const b = ref(['write', 'more'])
+ *      const c = useAppend(a, b)  //=> c.value === ['write', 'more', 'tests']
+ *      a.value = ['tests']     //=> c.value === ['write', 'more', ['tests']]
+ *      b.value = []            //=> c.value === [['tests']]
+ */
 exports.useAppend = reactifyCurried(ramda_1.append);
+/**
+ * Applies function `fn` to the argument list `args`. This is useful for
+ * creating a fixed-arity function from a variadic function. `fn` should be a
+ * bound function if context is significant.
+ *
+ * @func
+ * @category Function
+ * @sig (*... -> a) -> [*] -> a
+ * @param {MaybeRef<Function>} fn The function which will be called with `args`
+ * @param {MaybeRef<Array>} args The arguments to call `fn` with
+ * @return {ComputedRef<*>} result The result, equivalent to `fn(...args)`
+ * @see R.call, R.unapply
+ * @example
+ *
+ *      const nums = [1, 2, 3, -99, 42, 6, 7];
+ *      R.apply(Math.max, nums); //=> 42
+ * @symb R.apply(f, [a, b, c]) = f(a, b, c)
+ */
 exports.useApply = reactifyCurried(ramda_1.apply);
+// export const useApply = reactifyCurried(unrefSecondParam(apply))
 exports.useApplySpec = reactifyCurried(ramda_1.applySpec);
 exports.useApplyTo = reactifyCurried(ramda_1.applyTo);
 exports.useAscend = reactifyCurried(ramda_1.ascend);
@@ -230,42 +390,42 @@ exports.useXor = reactifyCurried(ramda_1.xor);
 exports.useXprod = reactifyCurried(ramda_1.xprod);
 exports.useZip = reactifyCurried(ramda_1.zip);
 exports.useZipObj = reactifyCurried(ramda_1.zipObj);
-exports.useAll = reactifyCurried(unrefFirstParamPredicate(ramda_1.all));
-exports.useAny = reactifyCurried(unrefFirstParamPredicate(ramda_1.any));
-exports.useComparator = reactifyCurried(unrefFirstParamPredicate(ramda_1.comparator));
-exports.useCount = reactifyCurried(unrefFirstParamPredicate(ramda_1.count));
-exports.useDifferenceWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.differenceWith));
-exports.useDropLastWhile = reactifyCurried(unrefFirstParamPredicate(ramda_1.dropLastWhile));
-exports.useDropRepeatsWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.dropRepeatsWith));
-exports.useDropWhile = reactifyCurried(unrefFirstParamPredicate(ramda_1.dropWhile));
-exports.useFilter = reactifyCurried(unrefFirstParamPredicate(ramda_1.filter));
-exports.useFind = reactifyCurried(unrefFirstParamPredicate(ramda_1.find));
-exports.useFindIndex = reactifyCurried(unrefFirstParamPredicate(ramda_1.findIndex));
-exports.useFindLast = reactifyCurried(unrefFirstParamPredicate(ramda_1.findLast));
-exports.useFindLastIndex = reactifyCurried(unrefFirstParamPredicate(ramda_1.findLastIndex));
-exports.useGroupWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.groupWith));
-exports.useIfElse = reactifyCurried(unrefFirstParamPredicate(ramda_1.ifElse));
-exports.useInnerJoin = reactifyCurried(unrefFirstParamPredicate(ramda_1.innerJoin));
-exports.useNone = reactifyCurried(unrefFirstParamPredicate(ramda_1.none));
-exports.usePartition = reactifyCurried(unrefFirstParamPredicate(ramda_1.partition));
-exports.usePathSatisfies = reactifyCurried(unrefFirstParamPredicate(ramda_1.pathSatisfies));
-exports.usePickBy = reactifyCurried(unrefFirstParamPredicate(ramda_1.pickBy));
-exports.usePropSatisfies = reactifyCurried(unrefFirstParamPredicate(ramda_1.propSatisfies));
-exports.useReduceWhile = reactifyCurried(unrefFirstParamPredicate(ramda_1.reduceWhile));
-exports.useReject = reactifyCurried(unrefFirstParamPredicate(ramda_1.reject));
-exports.useSortBy = reactifyCurried(unrefFirstParamPredicate(ramda_1.sortBy));
-exports.useSplitWhen = reactifyCurried(unrefFirstParamPredicate(ramda_1.splitWhen));
-exports.useSplitWhenever = reactifyCurried(unrefFirstParamPredicate(ramda_1.splitWhenever));
-exports.useSymmetricDifferenceWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.symmetricDifferenceWith));
-exports.useTakeLastWhile = reactifyCurried(unrefFirstParamPredicate(ramda_1.takeLastWhile));
-exports.useTakeWhile = reactifyCurried(unrefFirstParamPredicate(ramda_1.takeWhile));
-exports.useUnionWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.unionWith));
-exports.useUniqWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.uniqWith));
-exports.useUnless = reactifyCurried(unrefFirstParamPredicate(ramda_1.unless));
-exports.useUntil = reactifyCurried(unrefFirstParamPredicate(ramda_1.until));
-exports.useWhen = reactifyCurried(unrefFirstParamPredicate(ramda_1.when));
-exports.useZipWith = reactifyCurried(unrefFirstParamPredicate(ramda_1.zipWith));
-exports.useAllPass = reactifyCurried(unrefFirstParamListPredicate(ramda_1.allPass));
-exports.useAnyPass = reactifyCurried(unrefFirstParamListPredicate(ramda_1.anyPass));
-exports.useBoth = reactifyCurried(unrefAllParamPredicate(ramda_1.both));
-exports.useEither = reactifyCurried(unrefAllParamPredicate(ramda_1.either));
+exports.useAll = reactifyCurried(unrefFirstParam(ramda_1.all));
+exports.useAny = reactifyCurried(unrefFirstParam(ramda_1.any));
+exports.useComparator = reactifyCurried(unrefFirstParam(ramda_1.comparator));
+exports.useCount = reactifyCurried(unrefFirstParam(ramda_1.count));
+exports.useDifferenceWith = reactifyCurried(unrefFirstParam(ramda_1.differenceWith));
+exports.useDropLastWhile = reactifyCurried(unrefFirstParam(ramda_1.dropLastWhile));
+exports.useDropRepeatsWith = reactifyCurried(unrefFirstParam(ramda_1.dropRepeatsWith));
+exports.useDropWhile = reactifyCurried(unrefFirstParam(ramda_1.dropWhile));
+exports.useFilter = reactifyCurried(unrefFirstParam(ramda_1.filter));
+exports.useFind = reactifyCurried(unrefFirstParam(ramda_1.find));
+exports.useFindIndex = reactifyCurried(unrefFirstParam(ramda_1.findIndex));
+exports.useFindLast = reactifyCurried(unrefFirstParam(ramda_1.findLast));
+exports.useFindLastIndex = reactifyCurried(unrefFirstParam(ramda_1.findLastIndex));
+exports.useGroupWith = reactifyCurried(unrefFirstParam(ramda_1.groupWith));
+exports.useIfElse = reactifyCurried(unrefFirstParam(ramda_1.ifElse));
+exports.useInnerJoin = reactifyCurried(unrefFirstParam(ramda_1.innerJoin));
+exports.useNone = reactifyCurried(unrefFirstParam(ramda_1.none));
+exports.usePartition = reactifyCurried(unrefFirstParam(ramda_1.partition));
+exports.usePathSatisfies = reactifyCurried(unrefFirstParam(ramda_1.pathSatisfies));
+exports.usePickBy = reactifyCurried(unrefFirstParam(ramda_1.pickBy));
+exports.usePropSatisfies = reactifyCurried(unrefFirstParam(ramda_1.propSatisfies));
+exports.useReduceWhile = reactifyCurried(unrefFirstParam(ramda_1.reduceWhile));
+exports.useReject = reactifyCurried(unrefFirstParam(ramda_1.reject));
+exports.useSortBy = reactifyCurried(unrefFirstParam(ramda_1.sortBy));
+exports.useSplitWhen = reactifyCurried(unrefFirstParam(ramda_1.splitWhen));
+exports.useSplitWhenever = reactifyCurried(unrefFirstParam(ramda_1.splitWhenever));
+exports.useSymmetricDifferenceWith = reactifyCurried(unrefFirstParam(ramda_1.symmetricDifferenceWith));
+exports.useTakeLastWhile = reactifyCurried(unrefFirstParam(ramda_1.takeLastWhile));
+exports.useTakeWhile = reactifyCurried(unrefFirstParam(ramda_1.takeWhile));
+exports.useUnionWith = reactifyCurried(unrefFirstParam(ramda_1.unionWith));
+exports.useUniqWith = reactifyCurried(unrefFirstParam(ramda_1.uniqWith));
+exports.useUnless = reactifyCurried(unrefFirstParam(ramda_1.unless));
+exports.useUntil = reactifyCurried(unrefFirstParam(ramda_1.until));
+exports.useWhen = reactifyCurried(unrefFirstParam(ramda_1.when));
+exports.useZipWith = reactifyCurried(unrefFirstParam(ramda_1.zipWith));
+exports.useAllPass = reactifyCurried(unrefFirstParamList(ramda_1.allPass));
+exports.useAnyPass = reactifyCurried(unrefFirstParamList(ramda_1.anyPass));
+exports.useBoth = reactifyCurried(unrefAllParams(ramda_1.both));
+exports.useEither = reactifyCurried(unrefAllParams(ramda_1.either));

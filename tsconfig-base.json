@@ -3,7 +3,6 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
-    "declaration": true,
     "esModuleInterop": true,
     "inlineSourceMap": false,
     "lib": ["esnext"],
@@ -15,11 +14,11 @@
     "resolveJsonModule": true,
     "rootDir": "src",
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "traceResolution": false,
     "types": ["node"]
   },
   "compileOnSave": false,
   "exclude": ["node_modules", "dist"],
-  "include": ["src"]
+  "include": ["src/index.js"]
 }
