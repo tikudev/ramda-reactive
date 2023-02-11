@@ -1,8 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert'
 import * as sut from './index.js'
-import { ref } from 'vue'
-import { always, toUpper, multiply, add, identity } from 'ramda'
+import { ref, unref } from 'vue'
+import { always, toUpper, multiply, add } from 'ramda'
 
 const testReactive = (
   composableFn,
@@ -62,7 +62,7 @@ const allTests = {
         [2, 4, 6, 4, 5, 6],
       ],
       [
-        [identity, always([2, 4])],
+        [unref, always([2, 4])],
         [4, 8, 5, 7],
       ],
     ],
@@ -99,7 +99,7 @@ const allTests = {
     [[[Math.max, [1, 2, 3]], 3]],
     [
       [[Math.max, ref([1, 2, 3])], 3],
-      [[identity, always([0, 1])], 1],
+      [[unref, always([0, 1])], 1],
     ],
   ],
   useApplyTo: [
@@ -111,6 +111,23 @@ const allTests = {
     [
       [[ref(3), ref(add(1))], 4],
       [[always([0]), always(add(2))], 2],
+    ],
+  ],
+  useAssoc: [
+    [[['foo', 2, { bar: 3 }], { foo: 2, bar: 3 }]],
+    [
+      [[ref('foo'), ref(2), ref({ bar: 3 })], { foo: 2, bar: 3 }],
+      [[unref, always(3), always({ buzz: 4 })], { foo: 3, buzz: 4 }],
+    ],
+  ],
+  useAssocPath: [
+    [[[['foo', 'boo'], 2, { bar: 3 }], { foo: { boo: 2 }, bar: 3 }]],
+    [
+      [
+        [ref(['foo', 'boo']), ref(2), ref({ bar: 3 })],
+        { foo: { boo: 2 }, bar: 3 },
+      ],
+      [[unref, always(3), always({ buzz: 4 })], { foo: { boo: 3 }, buzz: 4 }],
     ],
   ],
 }

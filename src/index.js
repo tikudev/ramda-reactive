@@ -555,8 +555,53 @@ export const useApplyTo = reactifyCurried(applyTo)
  */
 export const useAscend = reactifyCurried(unrefFirstParam(ascend))
 
+/**
+ * Makes a shallow clone of an object, setting or overriding the specified
+ * property with the given value. Note that this copies and flattens prototype
+ * properties onto the new object as well. All non-primitive properties are
+ * copied by reference.
+ *
+ * @func
+ * @category Object
+ * @typedefn Idx = String | Int
+ * @sig Idx -> a -> {k: v} -> {k: v}
+ * @param {MaybeRef<String|Number>} prop The property name to set
+ * @param {MaybeRef<*>} val The new value
+ * @param {MaybeRef<Object>} obj The object to clone
+ * @return {ComputedRef<Object>} A new object equivalent to the original except for the changed property.
+ * @see R.dissoc, R.pick
+ * @example
+ *
+ * const obj = ref({a: 1, b: 2})
+ * const a = useAssoc('c', 3, obj) //=> a.value === {a: 1, b: 2, c: 3}
+ * obj.value = {d: 4} //=> a.value === {d: 4, c: 3}
+ */
 export const useAssoc = reactifyCurried(assoc)
+
+/**
+ * Makes a shallow clone of an object, setting or overriding the nodes required
+ * to create the given path, and placing the specific value at the tail end of
+ * that path. Note that this copies and flattens prototype properties onto the
+ * new object as well. All non-primitive properties are copied by reference.
+ *
+ * @func
+ * @category Object
+ * @typedefn Idx = String | Int | Symbol
+ * @sig [Idx] -> a -> {a} -> {a}
+ * @param {MaybeRef<Array>} path the path to set
+ * @param {MaybeRef<*>} val The new value
+ * @param {MaybeRef<Object>} obj The object to clone
+ * @return {ComputedRef<Object>} A new object equivalent to the original except along the specified path.
+ * @see R.dissocPath
+ * @example
+ *
+ *      R.assocPath(['a', 'b', 'c'], 42, {a: {b: {c: 0}}}); //=> {a: {b: {c: 42}}}
+ *
+ *      // Any missing or non-object keys in path will be overridden
+ *      R.assocPath(['a', 'b', 'c'], 42, {a: 5}); //=> {a: {b: {c: 42}}}
+ */
 export const useAssocPath = reactifyCurried(assocPath)
+
 export const useBinary = reactifyCurried(binary)
 export const useBind = reactifyCurried(bind)
 export const useCall = reactifyCurried(call)
