@@ -41,5 +41,10 @@
   },
   "peerDependencies": {
     "vue": "^2.7.0 || >=3.0.0"
-  }
+  },
+  "files": [
+    "/dist",
+    "package.json",
+    "README.md"
+  ]
 }
