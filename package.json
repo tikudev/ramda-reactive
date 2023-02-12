@@ -1,6 +1,6 @@
 {
   "name": "ramda-reactive",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "ramda, but everything is reactive",
   "scripts": {
     "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup",
