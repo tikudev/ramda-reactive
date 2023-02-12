@@ -595,24 +595,77 @@ export const useAssoc = reactifyCurried(assoc)
  * @see R.dissocPath
  * @example
  *
- *      R.assocPath(['a', 'b', 'c'], 42, {a: {b: {c: 0}}}); //=> {a: {b: {c: 42}}}
- *
- *      // Any missing or non-object keys in path will be overridden
- *      R.assocPath(['a', 'b', 'c'], 42, {a: 5}); //=> {a: {b: {c: 42}}}
+ * const obj = ref({a: 1, b: 2})
+ * const a = useAssocPath(['c', 'e'], 3, obj) //=> a.value === {a: 1, b: 2, c: {e: 3}}
+ * obj.value = {d: 4} //=> a.value === {d: 4, c: {e: 3}}
  */
 export const useAssocPath = reactifyCurried(assocPath)
 
 export const useBinary = reactifyCurried(binary)
 export const useBind = reactifyCurried(bind)
+
+/**
+ * Returns the result of calling its first argument with the remaining
+ * arguments. This is occasionally useful as a converging function for
+ * [`R.converge`](#converge): the first branch can produce a function while the
+ * remaining branches produce values to be passed to that function as its
+ * arguments.
+ *
+ * @func
+ * @category Function
+ * @sig ((*... -> a), *...) -> a
+ * @param {MaybeRef<Function>} fn The function to apply to the remaining arguments.
+ * @param {...MaybeRef<*>} args Any number of positional arguments.
+ * @return {ComputedRef<*>}
+ * @see R.apply
+ * @example
+ *
+ * const fn = ref(Math.max)
+ * const firstParam = ref(1)
+ * const result = useCall(fn, firstParam, 2, 3) //=> result.value === 3
+ * fn.value = Math.min //=> result.value === 1
+ * firstParam.value = 0 //=> result.value === 0
+ */
 export const useCall = reactifyCurried(call)
+
+/**
+ * `chain` maps a function over a list and concatenates the results. `chain`
+ * is also known as `flatMap` in some libraries.
+ *
+ * Dispatches to the `chain` method of the second argument, if present,
+ * according to the [FantasyLand Chain spec](https://github.com/fantasyland/fantasy-land#chain).
+ *
+ * If second argument is a function, `chain(f, g)(x)` is equivalent to `f(g(x), x)`.
+ *
+ * Acts as a transducer if a transformer is given in list position.
+ *
+ * @func
+ * @category List
+ * @sig Chain m => (a -> m b) -> m a -> m b
+ * @param {MaybeRef<Function>} fn The function to map with
+ * @param {MaybeRef<Array>} list The list to map over
+ * @return {ComputedRef<Array>} The result of flat-mapping `list` with `fn`
+ * @example
+ *
+ *      const duplicate = n => [n, n];
+ *      R.chain(duplicate, [1, 2, 3]); //=> [1, 1, 2, 2, 3, 3]
+ *
+ *      R.chain(R.append, R.head)([1, 2, 3]); //=> [1, 2, 3, 1]
+ */
+
 export const useChain = reactifyCurried(chain)
+
+// TODO
 export const useClamp = reactifyCurried(clamp)
 export const useClone = reactifyCurried(clone)
+// TODO
 export const useCollectBy = reactifyCurried(collectBy)
+// TODO
 export const useComplement = reactifyCurried(complement)
 export const useCompose = reactifyCurried(compose)
 export const useComposeWith = reactifyCurried(composeWith)
 export const useConcat = reactifyCurried(concat)
+// TODO
 export const useCond = reactifyCurried(cond)
 export const useConstruct = reactifyCurried(construct)
 export const useConstructN = reactifyCurried(constructN)
@@ -624,8 +677,11 @@ export const useDec = reactifyCurried(dec)
 export const useDefaultTo = reactifyCurried(defaultTo)
 export const useDescend = reactifyCurried(descend)
 export const useDifference = reactifyCurried(difference)
+// TODO
 export const useDissoc = reactifyCurried(dissoc)
+// TODO
 export const useDissocPath = reactifyCurried(dissocPath)
+// TODO
 export const useDivide = reactifyCurried(divide)
 export const useDrop = reactifyCurried(drop)
 export const useDropLast = reactifyCurried(dropLast)
@@ -633,14 +689,18 @@ export const useDropRepeats = reactifyCurried(dropRepeats)
 export const useEmpty = reactifyCurried(empty)
 export const useEndsWith = reactifyCurried(endsWith)
 export const useEqBy = reactifyCurried(eqBy)
+// TODO
 export const useEqProps = reactifyCurried(eqProps)
+// TODO
 export const useEquals = reactifyCurried(equals)
 export const useEvolve = reactifyCurried(evolve)
+// TODO
 export const useFlatten = reactifyCurried(flatten)
 export const useFlip = reactifyCurried(flip)
 export const useForEach = reactifyCurried(forEach)
 export const useForEachObjIndexed = reactifyCurried(forEachObjIndexed)
 export const useFromPairs = reactifyCurried(fromPairs)
+// TODO
 export const useGroupBy = reactifyCurried(groupBy)
 export const useGt = reactifyCurried(gt)
 export const useGte = reactifyCurried(gte)
@@ -651,12 +711,14 @@ export const useHead = reactifyCurried(head)
 export const useIdentical = reactifyCurried(identical)
 export const useIdentity = reactifyCurried(identity)
 export const useInc = reactifyCurried(inc)
+// TODO
 export const useIncludes = reactifyCurried(includes)
 export const useIndexBy = reactifyCurried(indexBy)
 export const useIndexOf = reactifyCurried(indexOf)
 export const useInit = reactifyCurried(init)
 export const useInsert = reactifyCurried(insert)
 export const useInsertAll = reactifyCurried(insertAll)
+// TODO
 export const useIntersection = reactifyCurried(intersection)
 export const useIntersperse = reactifyCurried(intersperse)
 export const useInto = reactifyCurried(into)
@@ -668,6 +730,7 @@ export const useIsEmpty = reactifyCurried(isEmpty)
 export const useIsNil = reactifyCurried(isNil)
 export const useJoin = reactifyCurried(join)
 export const useJuxt = reactifyCurried(juxt)
+// TODO
 export const useKeys = reactifyCurried(keys)
 export const useKeysIn = reactifyCurried(keysIn)
 export const useLast = reactifyCurried(last)
@@ -681,6 +744,7 @@ export const useLift = reactifyCurried(lift)
 export const useLiftN = reactifyCurried(liftN)
 export const useLt = reactifyCurried(lt)
 export const useLte = reactifyCurried(lte)
+// TODO
 export const useMap = reactifyCurried(map)
 export const useMapAccum = reactifyCurried(mapAccum)
 export const useMapAccumRight = reactifyCurried(mapAccumRight)
@@ -701,6 +765,7 @@ export const useMergeLeft = reactifyCurried(mergeLeft)
 export const useMergeRight = reactifyCurried(mergeRight)
 export const useMergeWith = reactifyCurried(mergeWith)
 export const useMergeWithKey = reactifyCurried(mergeWithKey)
+// TODO
 export const useMin = reactifyCurried(min)
 export const useMinBy = reactifyCurried(minBy)
 export const useModify = reactifyCurried(modify)
@@ -716,9 +781,11 @@ export const useNthArg = reactifyCurried(nthArg)
 export const useO = reactifyCurried(o)
 export const useObjOf = reactifyCurried(objOf)
 export const useOf = reactifyCurried(of)
+// TODO
 export const useOmit = reactifyCurried(omit)
 export const useOn = reactifyCurried(on)
 export const useOnce = reactifyCurried(once)
+// TODO
 export const useOr = reactifyCurried(or)
 export const useOtherwise = reactifyCurried(otherwise)
 export const useOver = reactifyCurried(over)
@@ -726,25 +793,38 @@ export const usePair = reactifyCurried(pair)
 export const usePartial = reactifyCurried(partial)
 export const usePartialObject = reactifyCurried(partialObject)
 export const usePartialRight = reactifyCurried(partialRight)
+// TODO
 export const usePath = reactifyCurried(path)
+// TODO
 export const usePathEq = reactifyCurried(pathEq)
+// TODO
 export const usePathOr = reactifyCurried(pathOr)
+// TODO
 export const usePaths = reactifyCurried(paths)
+// TODO
 export const usePick = reactifyCurried(pick)
 export const usePickAll = reactifyCurried(pickAll)
 export const usePipe = reactifyCurried(pipe)
 export const usePipeWith = reactifyCurried(pipeWith)
+// TODO
 export const usePluck = reactifyCurried(pluck)
+// TODO
 export const usePrepend = reactifyCurried(prepend)
+// TODO
 export const useProduct = reactifyCurried(product)
 export const useProject = reactifyCurried(project)
 export const usePromap = reactifyCurried(promap)
+// TODO
 export const useProp = reactifyCurried(prop)
+// TODO
 export const usePropEq = reactifyCurried(propEq)
 export const usePropIs = reactifyCurried(propIs)
+// TODO
 export const usePropOr = reactifyCurried(propOr)
+// TODO
 export const useProps = reactifyCurried(props)
 export const useRange = reactifyCurried(range)
+// TODO
 export const useReduce = reactifyCurried(reduce)
 export const useReduceBy = reactifyCurried(reduceBy)
 export const useReduceRight = reactifyCurried(reduceRight)
@@ -752,18 +832,22 @@ export const useReduced = reactifyCurried(reduced)
 export const useRemove = reactifyCurried(remove)
 export const useRepeat = reactifyCurried(repeat)
 export const useReplace = reactifyCurried(replace)
+// TODO
 export const useReverse = reactifyCurried(reverse)
 export const useScan = reactifyCurried(scan)
 export const useSequence = reactifyCurried(sequence)
 export const useSet = reactifyCurried(set)
 export const useSlice = reactifyCurried(slice)
+// TODO
 export const useSort = reactifyCurried(sort)
+// TODO
 export const useSortWith = reactifyCurried(sortWith)
 export const useSplit = reactifyCurried(split)
 export const useSplitAt = reactifyCurried(splitAt)
 export const useSplitEvery = reactifyCurried(splitEvery)
 export const useStartsWith = reactifyCurried(startsWith)
 export const useSubtract = reactifyCurried(subtract)
+// TODO
 export const useSum = reactifyCurried(sum)
 export const useSymmetricDifference = reactifyCurried(symmetricDifference)
 export const useTail = reactifyCurried(tail)
@@ -795,6 +879,7 @@ export const useUnnest = reactifyCurried(unnest)
 export const useUnwind = reactifyCurried(unwind)
 export const useUpdate = reactifyCurried(update)
 export const useUseWith = reactifyCurried(useWith)
+// TODO
 export const useValues = reactifyCurried(values)
 export const useValuesIn = reactifyCurried(valuesIn)
 export const useView = reactifyCurried(view)
@@ -802,12 +887,17 @@ export const useWhere = reactifyCurried(where)
 export const useWhereAny = reactifyCurried(whereAny)
 export const useWhereEq = reactifyCurried(whereEq)
 export const useWithout = reactifyCurried(without)
+// TODO
 export const useXor = reactifyCurried(xor)
 export const useXprod = reactifyCurried(xprod)
+// TODO
 export const useZip = reactifyCurried(zip)
+// TODO
 export const useZipObj = reactifyCurried(zipObj)
 
+// TODO
 export const useAll = reactifyCurried(unrefFirstParam(all))
+// TODO
 export const useAny = reactifyCurried(unrefFirstParam(any))
 export const useComparator = reactifyCurried(unrefFirstParam(comparator))
 export const useCount = reactifyCurried(unrefFirstParam(count))
@@ -819,21 +909,31 @@ export const useDropRepeatsWith = reactifyCurried(
   unrefFirstParam(dropRepeatsWith)
 )
 export const useDropWhile = reactifyCurried(unrefFirstParam(dropWhile))
+// TODO
 export const useFilter = reactifyCurried(unrefFirstParam(filter))
+// TODO
 export const useFind = reactifyCurried(unrefFirstParam(find))
+// TODO
 export const useFindIndex = reactifyCurried(unrefFirstParam(findIndex))
+// TODO
 export const useFindLast = reactifyCurried(unrefFirstParam(findLast))
+// TODO
 export const useFindLastIndex = reactifyCurried(unrefFirstParam(findLastIndex))
+// TODO
 export const useGroupWith = reactifyCurried(unrefFirstParam(groupWith))
+// TODO
 export const useIfElse = reactifyCurried(unrefFirstParam(ifElse))
 export const useInnerJoin = reactifyCurried(unrefFirstParam(innerJoin))
 export const useNone = reactifyCurried(unrefFirstParam(none))
+// TODO
 export const usePartition = reactifyCurried(unrefFirstParam(partition))
 export const usePathSatisfies = reactifyCurried(unrefFirstParam(pathSatisfies))
 export const usePickBy = reactifyCurried(unrefFirstParam(pickBy))
 export const usePropSatisfies = reactifyCurried(unrefFirstParam(propSatisfies))
 export const useReduceWhile = reactifyCurried(unrefFirstParam(reduceWhile))
+// TODO
 export const useReject = reactifyCurried(unrefFirstParam(reject))
+// TODO
 export const useSortBy = reactifyCurried(unrefFirstParam(sortBy))
 export const useSplitWhen = reactifyCurried(unrefFirstParam(splitWhen))
 export const useSplitWhenever = reactifyCurried(unrefFirstParam(splitWhenever))
@@ -849,8 +949,12 @@ export const useUntil = reactifyCurried(unrefFirstParam(until))
 export const useWhen = reactifyCurried(unrefFirstParam(when))
 export const useZipWith = reactifyCurried(unrefFirstParam(zipWith))
 
+// TODO
 export const useAllPass = reactifyCurried(unrefFirstParamList(allPass))
+// TODO
 export const useAnyPass = reactifyCurried(unrefFirstParamList(anyPass))
 
+// TODO
 export const useBoth = reactifyCurried(unrefAllParams(both))
+// TODO
 export const useEither = reactifyCurried(unrefAllParams(either))

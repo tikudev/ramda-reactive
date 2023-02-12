@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "ramda, but everything is reactive",
   "scripts": {
-    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup"
+    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup",
+    "test": "node --test"
   },
   "keywords": [
     "ramda",

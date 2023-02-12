@@ -130,6 +130,13 @@ const allTests = {
       [[unref, always(3), always({ buzz: 4 })], { foo: { boo: 3 }, buzz: 4 }],
     ],
   ],
+  useCall: [
+    [[[ref(Math.max), 1, 2, 3], 3]],
+    [
+      [[ref(Math.max), ref(1), 2, 3], 3],
+      [[always(Math.min), always(0)], 0],
+    ],
+  ],
 }
 
 Object.entries(allTests).forEach(([fnName, testCases]) =>
@@ -174,4 +181,13 @@ test('useAscend', () => {
     { name: 'Peter', age: 78, height: 180 },
     { name: 'Mikhail', age: 62, height: 190 },
   ])
+})
+
+test('useChain', () => {
+  const duplicate = n => [n, n]
+  const inputList = ref([1, 2, 3])
+  const actual = sut.useChain(duplicate, inputList)
+  assert.deepStrictEqual(actual.value, [1, 1, 2, 2, 3, 3])
+  inputList.value = [4, 7]
+  assert.deepStrictEqual(actual.value, [4, 4, 7, 7])
 })
