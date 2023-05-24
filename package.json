@@ -15,9 +15,9 @@
   },
   "keywords": [
     "ramda",
-    "reactify",
-    "vue chemistry",
     "vue",
+    "reactive",
+    "vue chemistry",
     "composition api",
     "vueuse"
   ],
@@ -39,8 +39,8 @@
     "./dist/": "./dist/"
   },
   "module": "./es/index.js",
-  "unpkg": "dist/ramda.min.js",
-  "jsdelivr": "dist/ramda.min.js",
+  "unpkg": "dist/ramda-reactive.min.js",
+  "jsdelivr": "dist/ramda-reactive.min.js",
   "files": [
     "es",
     "src",
