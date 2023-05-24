@@ -7,7 +7,7 @@
     "clean": "rm -rf dist && rm -rf src && rm -rf es",
     "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc -p tsconfig-dist.json && ./fixup",
     "minify": "npx esbuild ./dist/ramda-reactive.js --outfile=./dist/ramda-reactive.min.js",
-    "build": "npm run clean && npm run tsc && npm run minify && npm run format && npm run addTypes",
+    "build": "npm run clean && npm run gen && npm run tsc && npm run minify && npm run format && npm run addTypes",
     "addTypes": "cp ./source/types.d.ts dist/ && cp ./source/types.d.ts es/ && cp ./source/types.d.ts src/",
     "test": "node --test",
     "gen": "node scripts/generate.js",
