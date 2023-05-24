@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "src",
+    "baseUrl": "source",
     "esModuleInterop": true,
     "inlineSourceMap": false,
     "lib": ["esnext"],
@@ -12,13 +12,13 @@
     "noFallthroughCasesInSwitch": true,
     "pretty": true,
     "resolveJsonModule": true,
-    "rootDir": "src",
+    "rootDir": "source",
     "skipLibCheck": true,
     "strict": false,
     "traceResolution": false,
     "types": ["node"]
   },
   "compileOnSave": false,
-  "exclude": ["node_modules", "dist"],
-  "include": ["src/index.js"]
+  "exclude": ["node_modules", "dist", "es", "src"],
+  "include": ["source/index.js"]
 }

@@ -1,130 +1,75 @@
-import * as R from 'ramda'
-import fs from 'fs'
+import { getCommentsFromFile, parse } from '../lib/parseJsDoc/index.js'
+import {
+  writeNewFiles,
+  ramdaTypeDefFilePath,
+  getRamdaFilesInfo,
+} from './file.js'
+import {
+  convertFnName,
+  createJSDoc,
+  reactifyFn,
+  jsDocPropsToSingleLine,
+  parseJsDocParam,
+  reactifyParsedJsDocParam,
+} from './convert.js'
+import { genTypes } from './types.js'
 
-const ramdaExports = Object.keys(R)
+const getRamdaFnInfo = f => {
+  const fnName = f.file.split('.')[0]
 
-const firstParamPredicate = [
-  'all',
-  'any',
-  'comparator',
-  'count',
-  'differenceWith',
-  'dropLastWhile',
-  'dropRepeatsWith',
-  'dropWhile',
-  'filter',
-  'find',
-  'findIndex',
-  'findLast',
-  'findLastIndex',
-  'groupWith',
-  'ifElse',
-  'innerJoin',
-  'none',
-  'partition',
-  'pathSatisfies',
-  'pickBy',
-  'propSatisfies',
-  'reduceWhile',
-  'reject',
-  'sortBy',
-  'splitWhen',
-  'splitWhenever',
-  'symmetricDifferenceWith',
-  'takeLastWhile',
-  'takeWhile',
-  'unionWith',
-  'uniqWith',
-  'unless',
-  'until',
-  'when',
-  'zipWith',
-]
-const firstParamListOfPredicate = ['allPass', 'anyPass']
-const allParamsPredicate = ['both', 'either']
-const excludedExports = ['__', 'always', 'T', 'F']
-const relevantExports = R.without(excludedExports, ramdaExports)
+  const commentsWithoutPrivate = getCommentsFromFile(f.content).filter(
+    c => !c.includes('* @private')
+  )
 
-const specialExports = [
-  ...firstParamListOfPredicate,
-  ...firstParamPredicate,
-  ...allParamsPredicate,
-  ...excludedExports,
-]
+  const comments = jsDocPropsToSingleLine(commentsWithoutPrivate.toString())
 
-const otherExports = R.without(specialExports, ramdaExports)
+  const jsDoc = parse(comments, ['sig'])
 
-const generateImports = () => `import { computed, unref } from 'vue-demi'
-import {${relevantExports.join(', ')}} from 'ramda'
+  if (!jsDoc.param || jsDoc.param.length === 0) {
+    return []
+  }
+  const desc = getFnDescription(fnName, jsDoc)
 
-const reactifyCurried = fn => curryN(fn.length, (...args) => computed(() => fn.apply(undefined, args.map(unref))))
+  const newContent = reactifyFn(desc, createJSDoc(jsDoc))
 
-
-const unrefFirstParamPredicate =
-  fn =>
-  (pred, ...rest) =>
-    fn((...predArgs) => unref(pred(...predArgs)), ...rest)
-
-const unrefFirstParamListPredicate =
-  fn =>
-  (predList, ...rest) =>
-    fn(
-      predList.map(
-        pred =>
-          (...predArgs) =>
-            unref(pred(...predArgs))
-      ),
-      ...rest
-    )
-
-const unrefAllParamPredicate =
-  fn =>
-  (...params) =>
-    fn(
-      ...params.map(
-        pred =>
-          (...predArgs) =>
-            unref(pred(...predArgs))
-      )
-    )
-`
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  return [
+    {
+      ...f,
+      comments,
+      fnName,
+      jsDoc,
+      desc,
+      newContent,
+    },
+  ]
 }
 
-const reactifyOther = fnName =>
-  `export const use${capitalizeFirstLetter(
-    fnName
-  )} = reactifyCurried(${fnName})`
+const generate = async () => {
+  const filesInfo = await getRamdaFilesInfo()
+  const ramdaFnsInfo = filesInfo.flatMap(getRamdaFnInfo)
+  const ramdaReactiveTypesCode = genTypes(ramdaTypeDefFilePath, ramdaFnsInfo)
 
-const reactifyFirstParamPred = fnName =>
-  `export const use${capitalizeFirstLetter(
-    fnName
-  )} = reactifyCurried(unrefFirstParamPredicate(${fnName}))`
-
-const reactifyFirstParamListPred = fnName =>
-  `export const use${capitalizeFirstLetter(
-    fnName
-  )} = reactifyCurried(unrefFirstParamListPredicate(${fnName}))`
-
-const reactifyAllParamsPred = fnName =>
-  `export const use${capitalizeFirstLetter(
-    fnName
-  )} = reactifyCurried(unrefAllParamPredicate(${fnName}))`
-
-const generateFile = () => {
-  return `
-${generateImports()}
-
-
-${otherExports.map(reactifyOther).join('\n')}
-
-${firstParamPredicate.map(reactifyFirstParamPred).join('\n')}
-
-${firstParamListOfPredicate.map(reactifyFirstParamListPred).join('\n')}
-
-${allParamsPredicate.map(reactifyAllParamsPred).join('\n')}
-  `
+  writeNewFiles(ramdaFnsInfo, ramdaReactiveTypesCode)
 }
 
-fs.writeFileSync('./src/index_generated.js', generateFile())
+const getFnDescription = (oldFnName, parsedJsDoc) => {
+  const jsDocParams = parsedJsDoc.param ?? []
+
+  const parsedJsDocParams = jsDocParams.map(parseJsDocParam)
+  const out = {
+    original: {
+      name: oldFnName,
+      params: parsedJsDocParams,
+      returnType: parsedJsDoc.return.type,
+    },
+    reactive: {
+      name: convertFnName(oldFnName),
+      params: parsedJsDocParams.map(reactifyParsedJsDocParam),
+      returnType: `ComputedRef<${parsedJsDoc.return.type}>`,
+    },
+  }
+
+  return out
+}
+
+generate()

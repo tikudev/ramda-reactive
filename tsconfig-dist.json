@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig-base.json",
+  "exclude": ["node_modules", "dist", "es", "src", "source"],
+  "include": ["sourceDist/ramda-reactive.js"],
+  "compilerOptions": {
+    "baseUrl": "sourceDist",
+    "rootDir": "sourceDist",
+    "module": "commonjs",
+    "outDir": "dist",
+    "target": "es2015"
+  }
+}

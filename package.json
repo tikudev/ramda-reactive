@@ -1,10 +1,17 @@
 {
+  "author": "Tim Kutscha",
   "name": "ramda-reactive",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "ramda, but everything is reactive",
   "scripts": {
-    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup",
-    "test": "node --test"
+    "clean": "rm -rf dist && rm -rf src && rm -rf es",
+    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && tsc -p tsconfig-dist.json && ./fixup",
+    "minify": "npx esbuild ./dist/ramda-reactive.js --outfile=./dist/ramda-reactive.min.js",
+    "build": "npm run clean && npm run tsc && npm run minify && npm run format && npm run addTypes",
+    "addTypes": "cp ./source/types.d.ts dist/ && cp ./source/types.d.ts es/ && cp ./source/types.d.ts src/",
+    "test": "node --test",
+    "gen": "node scripts/generate.js",
+    "format": "npx prettier dist es src -w && npx eslint dist es src --fix"
   },
   "keywords": [
     "ramda",
@@ -14,37 +21,51 @@
     "composition api",
     "vueuse"
   ],
-  "author": "Tim Kutscha",
+  "sideEffects": false,
   "license": "MIT",
-  "devDependencies": {
-    "@babel/preset-env": "^7.20.2",
-    "@types/node": "^18.11.18",
-    "@types/ramda": "^0.28.22",
-    "eslint": "^8.32.0",
-    "vue": "^3.2.45"
-  },
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
+  "main": "./src/index.js",
+  "types": "./src/types.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js"
-    }
+      "require": "./src/index.js",
+      "import": "./es/index.js",
+      "default": "./src/index.js"
+    },
+    "./es/*": "./es/*.js",
+    "./src/*": "./src/*.js",
+    "./dist/*": "./dist/*.js",
+    "./es/": "./es/",
+    "./src/": "./src/",
+    "./dist/": "./dist/"
   },
+  "module": "./es/index.js",
+  "unpkg": "dist/ramda.min.js",
+  "jsdelivr": "dist/ramda.min.js",
+  "files": [
+    "es",
+    "src",
+    "dist"
+  ],
   "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/tikudev/ramda-reactive.git"
   },
   "dependencies": {
-    "ramda": "^0.28.0"
+    "ts-toolbelt": "=9.6.0",
+    "types-ramda": "=0.29.2"
   },
   "peerDependencies": {
+    "ramda": ">= 0.29.0",
     "vue": "^2.7.0 || >=3.0.0"
   },
-  "files": [
-    "/dist",
-    "package.json",
-    "README.md"
-  ]
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@types/node": "^18.11.18",
+    "esbuild": "0.17.19",
+    "eslint": "^8.32.0",
+    "ramda": "= 0.29.0",
+    "typescript": "^5.0.4",
+    "vue": "=3.3.4"
+  }
 }
