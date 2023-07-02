@@ -2,8 +2,14 @@ import ts from 'typescript'
 import fs from 'fs'
 import { canBeFunction } from './str.js'
 
-const wrapNewType = (type, str) =>
-  `${canBeFunction(type) ? ' MaybeRef' : ' MaybeWatchSource'}<${str}>`
+const wrapNewType = (type, str) => {
+  const wrappingParams = /^Parameters<(.*?)>/.test(str)
+  if (wrappingParams) {
+    return ` BoxMaybeRef<${str}>`
+  }
+
+  return `${canBeFunction(type) ? ' MaybeRef' : ' MaybeWatchSource'}<${str}>`
+}
 
 const nodeToStr = code => node => code.substring(node.pos, node.end)
 
@@ -285,4 +291,14 @@ type MaybeRef<T> = Ref<T> | T
  */
 type MaybeWatchSource<T> = WatchSource<T> | T
 
+/**
+ * Convert all properties of tuple to MaybeRef
+ */
+type BoxMaybeRef<T> = { [P in keyof T]: MaybeRef<T[P]> }
+
+
+/**
+ * Convert all properties of tuple to MaybeWatchSource
+ */
+type BoxMaybeWatchSource<T> = { [P in keyof T]: MaybeWatchSource<T[P]> }
 `

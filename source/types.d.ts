@@ -52,6 +52,16 @@ type MaybeRef<T> = Ref<T> | T
  */
 type MaybeWatchSource<T> = WatchSource<T> | T
 
+/**
+ * Convert all properties of tuple to MaybeRef
+ */
+type BoxMaybeRef<T> = { [P in keyof T]: MaybeRef<T[P]> }
+
+
+/**
+ * Convert all properties of tuple to MaybeWatchSource
+ */
+type BoxMaybeWatchSource<T> = { [P in keyof T]: MaybeWatchSource<T[P]> }
 
 
 
@@ -479,7 +489,7 @@ export function useAppend<T>(el: MaybeRef<T>, list: MaybeWatchSource<readonly T[
  * R.apply(Math.max, nums); //=> 42
  * ```
  */
-export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>): (args: MaybeWatchSource<Parameters<F>>) => ComputedRef<ReturnType<F>>;
+export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>): (args: BoxMaybeRef<Parameters<F>>) => ComputedRef<ReturnType<F>>;
 // apply(args, fn)
 // overload Placeholder options with versions for 1-to-5 args for best constraining
 export function useApply<A extends readonly [any]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
@@ -489,7 +499,7 @@ export function useApply<A extends readonly [any, any, any, any]>(__: Placeholde
 export function useApply<A extends readonly [any, any, any, any, any]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
 export function useApply<A extends readonly any[]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
 // apply(args, fn)
-export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>, args: MaybeWatchSource<Parameters<F>>): ComputedRef<ReturnType<F>>;
+export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>, args: BoxMaybeRef<Parameters<F>>): ComputedRef<ReturnType<F>>;
 
 
 /**
@@ -770,7 +780,7 @@ export function useBoth<T extends Pred>(pred1: MaybeRef<T>, pred2: MaybeRef<T>):
  * format({indent: 2, value: 'foo\nbar\nbaz\n'}); //=> '  foo\n  bar\n  baz\n'
  * ```
  */
-export function useCall<T extends (...args: readonly any[]) => any>(fn: MaybeRef<T>, ...args: MaybeRef<Parameters<T>>): ComputedRef<ReturnType<T>>;
+export function useCall<T extends (...args: readonly any[]) => any>(fn: MaybeRef<T>, ...args: BoxMaybeRef<Parameters<T>>): ComputedRef<ReturnType<T>>;
 
 
 /**
