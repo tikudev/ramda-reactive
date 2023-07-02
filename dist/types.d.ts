@@ -40,7 +40,7 @@ import {
   ToTupleOfFunction,
   Prop,
   DeepModify,
-} from '@types/ramda'
+} from 'ramda'
 
 /**
  * Either a Ref containing a type or the type itself
