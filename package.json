@@ -1,7 +1,7 @@
 {
   "author": "Tim Kutscha",
   "name": "ramda-reactive",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "ramda, but everything is reactive",
   "scripts": {
     "clean": "rm -rf dist && rm -rf src && rm -rf es",
