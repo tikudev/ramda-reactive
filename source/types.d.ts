@@ -66,8 +66,8 @@ type MaybeWatchSource<T> = WatchSource<T> | T
  * R.add(7)(10);      //=> 17
  * ```
  */
-export function useAdd(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useAdd(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useAdd(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -117,10 +117,6 @@ export function useAddIndex<T, U>(
  * R.adjust(-1, R.toUpper, ['a', 'b', 'c', 'd']);     //=> ['a', 'b', 'c', 'D']
  * ```
  */
-export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-// adjust(index, fn)(list)
-export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
-// adjust(index)
 export function useAdjust(index: MaybeWatchSource<number>): {
   // adjust(index)(fn, list)
   <T>(fn: MaybeRef<(a: T) => T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
@@ -130,19 +126,40 @@ export function useAdjust(index: MaybeWatchSource<number>): {
   <T>(fn: MaybeRef<(a: T) => T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 };
 
-// adjust(__, fn, list)(index)
-export function useAdjust<T>(__: Placeholder, fn: MaybeWatchSource<(a: T) => T>, list: MaybeRef<readonly T[]>): (index: MaybeWatchSource<number>) => ComputedRef<T[]>;
-// adjust(index, __, list)(fn)
-export function useAdjust<T>(index: MaybeWatchSource<number>, __: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => T>) => ComputedRef<T[]>;
+// adjust(__, fn)
+export function useAdjust<T>(__: Placeholder, fn: MaybeWatchSource<(a: T) => T>): {
+  // adjust(__, fn)(list)(index)
+  (list: MaybeRef<readonly T[]>): (index: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // adjust(__, fn)(__, index)(list)
+  (__: Placeholder, index: MaybeRef<number>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+  // adjust(__, fn)(list, index)
+  (list: MaybeRef<readonly T[]>, index: MaybeWatchSource<number>): ComputedRef<T[]>;
+};
+
+export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+
+// adjust(index, fn)(list)
+export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+// adjust(index, fn)(list)
+export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+
+
 // adjust(__, __, list)
 export function useAdjust<T>(__: Placeholder, __2: Placeholder, list: MaybeWatchSource<readonly T[]>): {
-  // adjust(__, __, list)(index, fn)
-  (index: MaybeRef<number>, fn: MaybeWatchSource<(a: T) => T>): ComputedRef<T[]>;
-  // adjust(__, __, list)(__, fn)(index)
-  (__3: Placeholder, fn: MaybeRef<(a: T) => T>): (index: MaybeWatchSource<number>) => ComputedRef<T[]>;
   // adjust(__, __, list)(index)(fn)
   (index: MaybeRef<number>): (fn: MaybeWatchSource<(a: T) => T>) => ComputedRef<T[]>;
+  // adjust(__, __, list)(__, fn)(index)
+  (__3: Placeholder, fn: MaybeRef<(a: T) => T>): (index: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // adjust(__, __, list)(index, fn)
+  (index: MaybeRef<number>, fn: MaybeWatchSource<(a: T) => T>): ComputedRef<T[]>;
 };
+// adjust(index, __, list)(fn)
+export function useAdjust<T>(index: MaybeWatchSource<number>, __: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => T>) => ComputedRef<T[]>;
+// adjust(__, fn, list)(index)
+export function useAdjust<T>(__: Placeholder, fn: MaybeWatchSource<(a: T) => T>, list: MaybeRef<readonly T[]>): (index: MaybeWatchSource<number>) => ComputedRef<T[]>;
+
+// adjust(index, fn, list)
+export function useAdjust<T>(index: MaybeWatchSource<number>, fn: MaybeRef<(a: T) => T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -162,22 +179,22 @@ export function useAdjust<T>(__: Placeholder, __2: Placeholder, list: MaybeWatch
  * R.all(equals3)([3, 3, 1, 3]); //=> false
  * ```
  */
-export function useAll<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
-// all(fn, { all })
-export function useAll<T, U extends { all: (fn: (a: T) => boolean) => boolean }>(fn: MaybeRef<(a: T) => boolean>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
-
-// all(__, list)(fn)
-export function useAll<T>(__: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => boolean>) => ComputedRef<boolean>;
-// all(__, { all })(fn)
-export function useAll<U extends { all: (fn: (a: any) => boolean) => boolean }>(__: Placeholder, obj: MaybeRef<U>): (fn: MaybeWatchSource<(a: InferAllAType<U>) => boolean>) => ComputedRef<boolean>;
-
-// all (fn)
 export function useAll<T>(fn: MaybeRef<(a: T) => boolean>): {
+  // all (fn)({ all })
+  <U extends { all: (fn: (a: T) => boolean) => boolean }>(obj: MaybeWatchSource<U>): ComputedRef<boolean>;
   // all (fn)(list)
   (list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
-  // all (fn)({ all })
-  // <U extends { all: (fn: (a: T) => boolean) => boolean }>(obj: U): boolean;gss
 };
+
+// all(__, { all })(fn)
+export function useAll<U extends { all: (fn: (a: any) => boolean) => boolean }>(__: Placeholder, obj: MaybeRef<U>): (fn: MaybeWatchSource<(a: InferAllAType<U>) => boolean>) => ComputedRef<boolean>;
+// all(__, list)(fn)
+export function useAll<T>(__: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => boolean>) => ComputedRef<boolean>;
+
+// all(fn, { all })
+export function useAll<T, U extends { all: (fn: (a: T) => boolean) => boolean }>(fn: MaybeRef<(a: T) => boolean>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
+// all(fn, list)
+export function useAll<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
 
 
 /**
@@ -264,9 +281,9 @@ export function useAlways<T>(val: MaybeRef<T>): ComputedRef<(...args: unknown[])
  * R.and(false, false); //=> false
  * ```
  */
+export function useAnd<A>(a: MaybeRef<A>): <B>(b: MaybeRef<B>) => ComputedRef<A | B>;
 export function useAnd<B>(__: Placeholder, b: MaybeRef<B>): <A>(a: MaybeRef<A>) => ComputedRef<A | B>;
 export function useAnd<A, B>(a: MaybeRef<A>, b: MaybeRef<B>): ComputedRef<A | B>;
-export function useAnd<A>(a: MaybeRef<A>): <B>(b: MaybeRef<B>) => ComputedRef<A | B>;
 
 
 /**
@@ -292,9 +309,9 @@ export function useAnd<A>(a: MaybeRef<A>): <B>(b: MaybeRef<B>) => ComputedRef<A 
  * getMemberName('bob@gmail.com').then(console.log);
  * ```
  */
-export function useAndThen<A, B>(onSuccess: MaybeRef<(a: A) => B | Promise<B>>, promise: MaybeWatchSource<Promise<A>>): ComputedRef<Promise<B>>;
-export function useAndThen<A>(__: Placeholder, promise: MaybeRef<Promise<A>>): <B>(onSuccess: MaybeWatchSource<(a: A) => B | Promise<B>>) => ComputedRef<Promise<B>>;
 export function useAndThen<A, B>(onSuccess: MaybeRef<(a: A) => B | Promise<B>>): (promise: MaybeWatchSource<Promise<A>>) => ComputedRef<Promise<B>>;
+export function useAndThen<A>(__: Placeholder, promise: MaybeRef<Promise<A>>): <B>(onSuccess: MaybeWatchSource<(a: A) => B | Promise<B>>) => ComputedRef<Promise<B>>;
+export function useAndThen<A, B>(onSuccess: MaybeRef<(a: A) => B | Promise<B>>, promise: MaybeWatchSource<Promise<A>>): ComputedRef<Promise<B>>;
 
 
 /**
@@ -315,16 +332,6 @@ export function useAndThen<A, B>(onSuccess: MaybeRef<(a: A) => B | Promise<B>>):
  * R.any(lessThan2)([1, 2]); //=> true
  * ```
  */
-export function useAny<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
-// any(fn, { any })
-export function useAny<T, U extends { any: (fn: (a: T) => boolean) => boolean }>(fn: MaybeRef<(a: T) => boolean>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
-
-// any(__, list)(fn)
-export function useAny<T>(__: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => boolean>) => ComputedRef<boolean>;
-// any(__, { any })(fn)
-export function useAny<U extends { any: (fn: (a: any) => boolean) => boolean }>(___: Placeholder, obj: MaybeRef<U>): (fn: MaybeWatchSource<(a: InferAnyAType<U>) => boolean>) => ComputedRef<boolean>;
-
-// all(fn)
 export function useAny<T>(fn: MaybeRef<(a: T) => boolean>): {
   // any(fn)(list)
   (list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
@@ -332,6 +339,15 @@ export function useAny<T>(fn: MaybeRef<(a: T) => boolean>): {
   <U extends { any: (fn: (a: T) => boolean) => boolean }>(obj: MaybeWatchSource<U>): ComputedRef<boolean>;
 };
 
+// any(__, list)(fn)
+export function useAny<T>(__: Placeholder, list: MaybeRef<readonly T[]>): (fn: MaybeWatchSource<(a: T) => boolean>) => ComputedRef<boolean>;
+// any(__, { any })(fn)
+export function useAny<U extends { any: (fn: (a: any) => boolean) => boolean }>(___: Placeholder, obj: MaybeRef<U>): (fn: MaybeWatchSource<(a: InferAnyAType<U>) => boolean>) => ComputedRef<boolean>;
+
+// any(fn, list)
+export function useAny<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
+// any(fn, { any })
+export function useAny<T, U extends { any: (fn: (a: T) => boolean) => boolean }>(fn: MaybeRef<(a: T) => boolean>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
 
 
 /**
@@ -405,9 +421,9 @@ export function useAnyPass<F extends Pred>(preds: MaybeWatchSource<readonly F[]>
  * R.ap(R.concat, R.toUpper)('Ramda') //=> 'RamdaRAMDA'
  * ```
  */
-export function useAp<T, U>(fns: MaybeRef<ReadonlyArray<(a: T) => U>>, vs: MaybeRef<readonly T[]>): ComputedRef<U[]>;
 export function useAp<T, U>(fns: MaybeRef<ReadonlyArray<(a: T) => U>>): (vs: MaybeRef<readonly T[]>) => ComputedRef<U[]>;
 export function useAp<R, A, B>(fn: MaybeRef<(r: R, a: A) => B>, fn1: MaybeRef<(r: R) => A>): ComputedRef<(r: R) => B>;
+export function useAp<T, U>(fns: MaybeRef<ReadonlyArray<(a: T) => U>>, vs: MaybeRef<readonly T[]>): ComputedRef<U[]>;
 
 
 /**
@@ -425,9 +441,9 @@ export function useAp<R, A, B>(fn: MaybeRef<(r: R, a: A) => B>, fn1: MaybeRef<(r
  * R.aperture(7, [1, 2, 3, 4, 5]); //=> []
  * ```
  */
-export function useAperture<N extends number, T>(n: MaybeWatchSource<N>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Array<Tuple<T, N>> | []>;
-export function useAperture<T>(__: Placeholder, list: MaybeWatchSource<readonly T[]>): <N extends number>(n: MaybeWatchSource<N>) => ComputedRef<Array<Tuple<T, N>> | []>;
 export function useAperture<N extends number>(n: MaybeWatchSource<N>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<Array<Tuple<T, N>> | []>;
+export function useAperture<T>(__: Placeholder, list: MaybeWatchSource<readonly T[]>): <N extends number>(n: MaybeWatchSource<N>) => ComputedRef<Array<Tuple<T, N>> | []>;
+export function useAperture<N extends number, T>(n: MaybeWatchSource<N>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Array<Tuple<T, N>> | []>;
 
 
 /**
@@ -443,11 +459,11 @@ export function useAperture<N extends number>(n: MaybeWatchSource<N>): <T>(list:
  * R.append(['tests'], ['write', 'more']); //=> ['write', 'more', ['tests']]
  * ```
  */
+export function useAppend<T>(el: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+// append(__, list)(el)
 export function useAppend<T>(__: Placeholder, list: MaybeRef<readonly T[]>): (el: MaybeWatchSource<T>) => ComputedRef<T[]>;
 // append(el, list)
 export function useAppend<T>(el: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-// append(el)(list)
-export function useAppend<T>(el: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 
 
 /**
@@ -463,6 +479,9 @@ export function useAppend<T>(el: MaybeRef<T>): (list: MaybeWatchSource<readonly 
  * R.apply(Math.max, nums); //=> 42
  * ```
  */
+export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>): (args: MaybeWatchSource<Parameters<F>>) => ComputedRef<ReturnType<F>>;
+// apply(args, fn)
+// overload Placeholder options with versions for 1-to-5 args for best constraining
 export function useApply<A extends readonly [any]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
 export function useApply<A extends readonly [any, any]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
 export function useApply<A extends readonly [any, any, any]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
@@ -471,8 +490,6 @@ export function useApply<A extends readonly [any, any, any, any, any]>(__: Place
 export function useApply<A extends readonly any[]>(__: Placeholder, args: MaybeRef<A>): <F extends (...args: A) => any>(fn: MaybeWatchSource<F>) => ComputedRef<ReturnType<F>>;
 // apply(args, fn)
 export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>, args: MaybeWatchSource<Parameters<F>>): ComputedRef<ReturnType<F>>;
-// apply(args)(fn)
-export function useApply<F extends (...args: readonly any[]) => any>(fn: MaybeRef<F>): (args: MaybeWatchSource<Parameters<F>>) => ComputedRef<ReturnType<F>>;
 
 
 /**
@@ -509,8 +526,8 @@ export function useApplySpec<T>(obj: MaybeWatchSource<any>): ComputedRef<(...arg
  * t42(R.add(1)); //=> 43
  * ```
  */
-export function useApplyTo<T, U>(el: MaybeRef<T>, fn: MaybeRef<(t: T) => U>): ComputedRef<U>;
 export function useApplyTo<T>(el: MaybeRef<T>): <U>(fn: MaybeRef<(t: T) => U>) => ComputedRef<U>;
+export function useApplyTo<T, U>(el: MaybeRef<T>, fn: MaybeRef<(t: T) => U>): ComputedRef<U>;
 
 
 /**
@@ -531,8 +548,8 @@ export function useApplyTo<T>(el: MaybeRef<T>): <U>(fn: MaybeRef<(t: T) => U>) =
  *   //=> [{ name: 'Mikhail', age: 62 },{ name: 'Emma', age: 70 }, { name: 'Peter', age: 78 }]
  * ```
  */
-export function useAscend<T>(fn: MaybeRef<(obj: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<Ordering>;
 export function useAscend<T>(fn: MaybeRef<(obj: T) => Ord>): (a: MaybeRef<T>, b: MaybeRef<T>) => ComputedRef<Ordering>;
+export function useAscend<T>(fn: MaybeRef<(obj: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<Ordering>;
 
 
 /**
@@ -636,11 +653,11 @@ export function useAssoc<K extends string>(prop: MaybeWatchSource<K>): {
  * R.assocPath(['a', 'b', 'c'], 42, {a: 5}); //=> {a: {b: {c: 42}}}
  * ```
  */
+export function useAssocPath<T, U>(path: MaybeWatchSource<Path>): _.F.Curry<(a: MaybeRef<T>, b: MaybeWatchSource<U>) => ComputedRef<U>>;
+export function useAssocPath<T, U>(path: MaybeWatchSource<Path>, val: MaybeRef<T>): (obj: MaybeWatchSource<U>) => ComputedRef<U>;
 export function useAssocPath<T, U>(__: Placeholder, val: MaybeWatchSource<T>, obj: MaybeRef<U>): (path: MaybeWatchSource<Path>) => ComputedRef<U>;
 export function useAssocPath<T, U>(path: MaybeWatchSource<Path>, __: Placeholder, obj: MaybeRef<U>): (val: MaybeWatchSource<T>) => ComputedRef<U>;
 export function useAssocPath<T, U>(path: MaybeWatchSource<Path>, val: MaybeRef<T>, obj: MaybeWatchSource<U>): ComputedRef<U>;
-export function useAssocPath<T, U>(path: MaybeWatchSource<Path>, val: MaybeRef<T>): (obj: MaybeWatchSource<U>) => ComputedRef<U>;
-export function useAssocPath<T, U>(path: MaybeWatchSource<Path>): _.F.Curry<(a: MaybeRef<T>, b: MaybeWatchSource<U>) => ComputedRef<U>>;
 
 
 /**
@@ -683,11 +700,11 @@ export function useBinary<T extends (...arg: any) => any>(fn: MaybeRef<T>): Comp
  */
 export function useBind<F extends (...args: readonly any[]) => any, T>(
   fn: MaybeRef<F>,
-  thisObj: MaybeWatchSource<T>,
-): ComputedRef<(...args: Parameters<F>) => ReturnType<F>>;
+): (thisObj: MaybeWatchSource<T>) => ComputedRef<(...args: Parameters<F>) => ReturnType<F>>;
 export function useBind<F extends (...args: readonly any[]) => any, T>(
   fn: MaybeRef<F>,
-): (thisObj: MaybeWatchSource<T>) => ComputedRef<(...args: Parameters<F>) => ReturnType<F>>;
+  thisObj: MaybeWatchSource<T>,
+): ComputedRef<(...args: Parameters<F>) => ReturnType<F>>;
 
 
 /**
@@ -715,12 +732,12 @@ export function useBind<F extends (...args: readonly any[]) => any, T>(
  * R.both([false, false, 'a'], [11]); //=> [false, false, 11]
  * ```
  */
+export function useBoth<T extends Pred>(pred1: MaybeRef<T>): (pred2: MaybeRef<T>) => ComputedRef<T>;
 export function useBoth<T, TF1 extends T, TF2 extends T>(
   pred1: MaybeRef<PredTypeguard<T, TF1>>,
   pred2: MaybeRef<PredTypeguard<T, TF2>>,
 ): ComputedRef<(a: T) => a is TF1 & TF2>;
 export function useBoth<T extends Pred>(pred1: MaybeRef<T>, pred2: MaybeRef<T>): ComputedRef<T>;
-export function useBoth<T extends Pred>(pred1: MaybeRef<T>): (pred2: MaybeRef<T>) => ComputedRef<T>;
 
 
 /**
@@ -804,10 +821,12 @@ export function useChain<A, B, R>(aToMb: MaybeRef<(a: A, r: R) => B>): (Ma: Mayb
  * R.clamp(1, 10, 4)  // => 4
  * ```
  */
-export function useClamp<T>(min: MaybeWatchSource<T>, max: MaybeWatchSource<T>, value: MaybeWatchSource<T>): ComputedRef<T>;
+export function useClamp<T>(min: MaybeWatchSource<T>): {
+  (max: MaybeWatchSource<T>): (value: MaybeWatchSource<T>) => ComputedRef<T>;
+  (max: MaybeWatchSource<T>, value: MaybeWatchSource<T>): ComputedRef<T>
+};
 export function useClamp<T>(min: MaybeWatchSource<T>, max: MaybeWatchSource<T>): (value: MaybeWatchSource<T>) => ComputedRef<T>;
-export function useClamp<T>(min: MaybeWatchSource<T>): (max: MaybeWatchSource<T>, value: MaybeWatchSource<T>) => ComputedRef<T>;
-export function useClamp<T>(min: MaybeWatchSource<T>): (max: MaybeWatchSource<T>) => (value: MaybeWatchSource<T>) => ComputedRef<T>;
+export function useClamp<T>(min: MaybeWatchSource<T>, max: MaybeWatchSource<T>, value: MaybeWatchSource<T>): ComputedRef<T>;
 
 
 /**
@@ -831,8 +850,8 @@ export function useClamp<T>(min: MaybeWatchSource<T>): (max: MaybeWatchSource<T>
  * objects[0] === objectsClone[0]; //=> false
  * ```
  */
-export function useClone<T>(value: MaybeRef<T>): ComputedRef<T>;
 export function useClone<T>(value: MaybeRef<readonly T[]>): ComputedRef<T[]>;
+export function useClone<T>(value: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -858,8 +877,8 @@ export function useClone<T>(value: MaybeRef<readonly T[]>): ComputedRef<T[]>;
  * //   [ {type: 'dinner', item: '🍝'} ] ]
  * ```
  */
-export function useCollectBy<T, K extends PropertyKey>(keyFn: MaybeRef<(value: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
 export function useCollectBy<T, K extends PropertyKey>(keyFn: MaybeRef<(value: T) => K>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[][]>;
+export function useCollectBy<T, K extends PropertyKey>(keyFn: MaybeRef<(value: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
 
 
 /**
@@ -1003,15 +1022,15 @@ export function useCompose<TArgs extends any[], R1>(f1: MaybeRef<(...args: TArgs
  * composeWhileNotNil([R.inc, R.prop('age')])({}) //=> undefined
  * ```
  */
-export function useComposeWith<TArgs extends any[], TResult>(
-  transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
-  fns: MaybeWatchSource<AtLeastOneFunctionsFlowFromRightToLeft<TArgs, TResult>>,
-): ComputedRef<(...args: TArgs) => TResult>;
 export function useComposeWith(
   transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
 ): <TArgs extends any[], TResult>(
   fns: MaybeWatchSource<AtLeastOneFunctionsFlowFromRightToLeft<TArgs, TResult>>,
 ) => ComputedRef<(...args: TArgs) => TResult>;
+export function useComposeWith<TArgs extends any[], TResult>(
+  transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
+  fns: MaybeWatchSource<AtLeastOneFunctionsFlowFromRightToLeft<TArgs, TResult>>,
+): ComputedRef<(...args: TArgs) => TResult>;
 
 
 /**
@@ -1032,24 +1051,18 @@ export function useComposeWith(
  * R.concat([], []); //=> []
  * ```
  */
-export function useConcat(
-  placeholder: Placeholder,
-): (<L1 extends any[], L2 extends any[]>(list1: MaybeWatchSource<L1>, list2: MaybeWatchSource<L2>) => ComputedRef<[...L1, ...L2]>) &
-(<S1 extends string, S2 extends string>(s1: MaybeWatchSource<S1>, s2: MaybeWatchSource<S2>) => ComputedRef<`${S1}${S2}`>);
-export function useConcat<L2 extends any[]>(
-  placeholder: Placeholder,
-  list2: MaybeWatchSource<L2>,
-): <L1 extends any[]>(list1: MaybeWatchSource<L1>) => ComputedRef<[...L1, ...L2]>;
-export function useConcat<S2 extends string>(
-  placeholder: Placeholder,
-  s2: MaybeWatchSource<S2>,
-): <S1 extends string>(s1: MaybeWatchSource<S1>) => ComputedRef<`${S1}${S2}`>;
-export function useConcat<L1 extends any[]>(list1: MaybeWatchSource<L1>): <L2 extends any[]>(list2: MaybeWatchSource<L2>) => ComputedRef<[...L1, ...L2]>;
-export function useConcat<S1 extends string>(s1: MaybeWatchSource<S1>): <S2 extends string>(s2: MaybeWatchSource<S2>) => ComputedRef<`${S1}${S2}`>;
-export function useConcat<L1 extends any[], L2 extends any[]>(list1: MaybeWatchSource<L1>, list2: MaybeWatchSource<L2>): ComputedRef<[...L1, ...L2]>;
-export function useConcat<S1 extends string, S2 extends string>(s1: MaybeWatchSource<S1>, s2: MaybeWatchSource<S2>): ComputedRef<`${S1}${S2}`>;
-export function useConcat(s1: MaybeWatchSource<string>, s2: MaybeWatchSource<string>): ComputedRef<string>;
-export function useConcat(s1: MaybeWatchSource<string>): (s2: MaybeWatchSource<string>) => ComputedRef<string>;
+export function useConcat<S1 extends string>(s1: MaybeWatchSource<S1>): <S2 extends string>(s2: MaybeWatchSource<S2>) => ComputedRef<string extends (S1 | S2) ? string : `${S1}${S2}`>;
+// concat(list)(list)
+export function useConcat<T>(list1: MaybeWatchSource<readonly T[]>): (list2: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+// concat(__, string)(string)
+export function useConcat<S2 extends string>(__: Placeholder, s2: MaybeWatchSource<S2>): <S1 extends string>(s1: MaybeWatchSource<S1>) => ComputedRef<string extends (S1 | S2) ? string : `${S1}${S2}`>;
+// concat(__, list)(list)
+export function useConcat<T2>(__: Placeholder, list2: MaybeWatchSource<readonly T2[]>): <T1>(list1: MaybeWatchSource<(readonly T2[] extends readonly T1[] ? readonly T1[] : never)>) => ComputedRef<T1[]>;
+// concat(string, string)
+export function useConcat<S1 extends string, S2 extends string>(s1: MaybeWatchSource<S1>, s2: MaybeWatchSource<S2>): ComputedRef<string extends (S1 | S2) ? string : `${S1}${S2}`>;
+// concat(list, list)
+// if you don't do 2 types here the single T will collapse list1 and list2 when you have tuples of the same type, which is incorrect behavior
+export function useConcat<T1, T2 extends T1>(list1: MaybeWatchSource<readonly T1[]>, list2: MaybeWatchSource<readonly T2[]>): ComputedRef<T1[]>;
 
 
 /**
@@ -1332,8 +1345,8 @@ export function useConverge<
  * R.map(R.count(even), [[1, 1, 1], [2, 3, 4, 5], [6]]); // => [0, 2, 1]
  * ```
  */
-export function useCount<T>(fn: MaybeRef<(a: T) => boolean>, list: readonly T[]): ComputedRef<number>;
 export function useCount<T>(fn: MaybeRef<(a: T) => boolean>): ComputedRef<(list: readonly T[]) => number>;
+export function useCount<T>(fn: MaybeRef<(a: T) => boolean>, list: readonly T[]): ComputedRef<number>;
 
 
 /**
@@ -1353,8 +1366,8 @@ export function useCount<T>(fn: MaybeRef<(a: T) => boolean>): ComputedRef<(list:
  * R.countBy(R.toLower)(letters);   //=> {'a': 3, 'b': 2, 'c': 1}
  * ```
  */
-export function useCountBy<T>(fn: MaybeRef<(a: T) => string | number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<{ [index: string]: number }>;
 export function useCountBy<T>(fn: MaybeRef<(a: T) => string | number>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [index: string]: number }>;
+export function useCountBy<T>(fn: MaybeRef<(a: T) => string | number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<{ [index: string]: number }>;
 
 
 /**
@@ -1451,15 +1464,15 @@ export function useCurry<F extends (...args: any) => any>(f: MaybeRef<F>): Compu
  * g(4); //=> 10
  * ```
  */
-export function useCurryN<N extends number, F extends (...args: any) => any>(
-  length: MaybeWatchSource<N>,
-  fn: MaybeRef<F>,
-): ComputedRef<_.F.Curry<(...a: _.T.Take<Parameters<F>, N>) => ReturnType<F>>>;
 export function useCurryN<N extends number>(
   length: MaybeWatchSource<N>,
 ): <F extends (...args: any) => any>(
   fn: MaybeRef<F>,
 ) => ComputedRef<_.F.Curry<(...a: _.T.Take<Parameters<F>, N>) => ReturnType<F>>>;
+export function useCurryN<N extends number, F extends (...args: any) => any>(
+  length: MaybeWatchSource<N>,
+  fn: MaybeRef<F>,
+): ComputedRef<_.F.Curry<(...a: _.T.Take<Parameters<F>, N>) => ReturnType<F>>>;
 
 
 /**
@@ -1491,8 +1504,9 @@ export function useDec(n: MaybeWatchSource<number>): ComputedRef<number>;
  * defaultTo42(parseInt('string')); //=> 42
  * ```
  */
-export function useDefaultTo<T, U>(a: MaybeWatchSource<T>, b: MaybeWatchSource<U | null | undefined>): ComputedRef<T | U>;
-export function useDefaultTo<T>(a: MaybeWatchSource<T>): <U>(b: MaybeWatchSource<U | null | undefined>) => ComputedRef<T | U>;
+export function useDefaultTo<Fallback>(a: MaybeWatchSource<Fallback>): <Value>(b: MaybeWatchSource<Value>) => ComputedRef<DefaultTo<Fallback, Value>>;
+export function useDefaultTo<Value>(__: Placeholder, b: MaybeWatchSource<Value>): <Fallback>(a: MaybeWatchSource<Fallback>) => ComputedRef<DefaultTo<Fallback, Value>>;
+export function useDefaultTo<Fallback, Value>(a: MaybeWatchSource<Fallback>, b: MaybeWatchSource<Value>): ComputedRef<DefaultTo<Fallback, Value>>;
 
 
 /**
@@ -1513,8 +1527,8 @@ export function useDefaultTo<T>(a: MaybeWatchSource<T>): <U>(b: MaybeWatchSource
  *   //=> [{ name: 'Peter', age: 78 }, { name: 'Emma', age: 70 }, { name: 'Mikhail', age: 62 }]
  * ```
  */
-export function useDescend<T>(fn: MaybeRef<(obj: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<Ordering>;
 export function useDescend<T>(fn: MaybeRef<(obj: T) => Ord>): (a: MaybeRef<T>, b: MaybeRef<T>) => ComputedRef<Ordering>;
+export function useDescend<T>(fn: MaybeRef<(obj: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<Ordering>;
 
 
 /**
@@ -1531,8 +1545,8 @@ export function useDescend<T>(fn: MaybeRef<(obj: T) => Ord>): (a: MaybeRef<T>, b
  * R.difference([{a: 1}, {b: 2}], [{a: 1}, {c: 3}]) //=> [{b: 2}]
  * ```
  */
-export function useDifference<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useDifference<T>(list1: MaybeWatchSource<readonly T[]>): (list2: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useDifference<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -1555,16 +1569,16 @@ export function useDifference<T>(list1: MaybeWatchSource<readonly T[]>): (list2:
  */
 export function useDifferenceWith<T1, T2>(
   pred: MaybeRef<(a: T1, b: T2) => boolean>,
-  list1: MaybeWatchSource<readonly T1[]>,
-  list2: MaybeWatchSource<readonly T2[]>,
-): ComputedRef<T1[]>;
-export function useDifferenceWith<T1, T2>(
-  pred: MaybeRef<(a: T1, b: T2) => boolean>,
 ): (list1: MaybeWatchSource<readonly T1[]>, list2: MaybeWatchSource<readonly T2[]>) => ComputedRef<T1[]>;
 export function useDifferenceWith<T1, T2>(
   pred: MaybeRef<(a: T1, b: T2) => boolean>,
   list1: MaybeWatchSource<readonly T1[]>,
 ): (list2: MaybeWatchSource<readonly T2[]>) => ComputedRef<T1[]>;
+export function useDifferenceWith<T1, T2>(
+  pred: MaybeRef<(a: T1, b: T2) => boolean>,
+  list1: MaybeWatchSource<readonly T1[]>,
+  list2: MaybeWatchSource<readonly T2[]>,
+): ComputedRef<T1[]>;
 
 
 /**
@@ -1577,8 +1591,8 @@ export function useDifferenceWith<T1, T2>(
  * R.dissoc('b', {a: 1, b: 2, c: 3}); //=> {a: 1, c: 3}
  * ```
  */
-export function useDissoc<T extends object, K extends keyof T>(prop: MaybeWatchSource<K>, obj: MaybeWatchSource<T>): ComputedRef<Omit<T, K>>;
 export function useDissoc<K extends string | number>(prop: MaybeWatchSource<K>): <T extends object>(obj: MaybeWatchSource<T>) => ComputedRef<Omit<T, K>>;
+export function useDissoc<T extends object, K extends keyof T>(prop: MaybeWatchSource<K>, obj: MaybeWatchSource<T>): ComputedRef<Omit<T, K>>;
 
 
 /**
@@ -1586,8 +1600,8 @@ export function useDissoc<K extends string | number>(prop: MaybeWatchSource<K>):
  * prototype properties onto the new object as well. All non-primitive
  * properties are copied by reference.
  */
-export function useDissocPath<T>(path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<T>;
 export function useDissocPath<T>(path: MaybeWatchSource<Path>): (obj: MaybeWatchSource<any>) => ComputedRef<T>;
+export function useDissocPath<T>(path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<T>;
 
 
 /**
@@ -1606,10 +1620,9 @@ export function useDissocPath<T>(path: MaybeWatchSource<Path>): (obj: MaybeWatch
  * reciprocal(4);   //=> 0.25
  * ```
  */
-export function useDivide(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useDivide(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useDivide(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useDivide(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useDivide(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useDivide(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -1629,12 +1642,12 @@ export function useDivide(a: MaybeWatchSource<number>): (b: MaybeWatchSource<num
  * R.drop(3, 'ramda');               //=> 'da'
  * ```
  */
-export function useDrop<T>(n: MaybeWatchSource<number>, xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
-export function useDrop(n: MaybeWatchSource<number>, xs: MaybeRef<string>): ComputedRef<string>;
 export function useDrop<T>(n: MaybeWatchSource<number>): {
   (xs: MaybeRef<string>): ComputedRef<string>;
   (xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 };
+export function useDrop(n: MaybeWatchSource<number>, xs: MaybeRef<string>): ComputedRef<string>;
+export function useDrop<T>(n: MaybeWatchSource<number>, xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -1653,12 +1666,12 @@ export function useDrop<T>(n: MaybeWatchSource<number>): {
  * R.dropLast(3, 'ramda');               //=> 'ra'
  * ```
  */
+export function useDropLast<T>(n: MaybeWatchSource<number>): {
+  (xs: MaybeWatchSource<string>): ComputedRef<string>;
+  (xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+};
 export function useDropLast<T>(n: MaybeWatchSource<number>, xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useDropLast(n: MaybeWatchSource<number>, xs: MaybeWatchSource<string>): ComputedRef<string>;
-export function useDropLast<T>(n: MaybeWatchSource<number>): {
-  (xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-  (xs: MaybeWatchSource<string>): ComputedRef<string>;
-};
 
 
 /**
@@ -1681,8 +1694,8 @@ export function useDropLast<T>(n: MaybeWatchSource<number>): {
  * R.dropLastWhile(x => x !== 'd' , 'Ramda'); //=> 'Ramd'
  * ```
  */
-export function useDropLastWhile<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useDropLastWhile<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useDropLastWhile<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -1715,11 +1728,9 @@ export function useDropRepeats<T>(list: MaybeWatchSource<readonly T[]>): Compute
  * R.dropRepeatsBy(Math.abs, [1, -1, -1, 2, 3, -4, 4, 2, 2]); //=> [1, 2, 3, -4, 2]
  * ```
  */
+export function useDropRepeatsBy<T, U>(fn: MaybeRef<(a: T) => U>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useDropRepeatsBy<T, U>(fn: MaybeRef<(a: T) => U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-export function useDropRepeatsBy<T, U>(
-  fn: MaybeRef<(a: T) => U>
-): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
-export function useDropRepeatsBy(fn: MaybeRef<any>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+
 
 
 /**
@@ -1737,8 +1748,8 @@ export function useDropRepeatsBy(fn: MaybeRef<any>): <T>(list: MaybeWatchSource<
  * R.dropRepeatsWith(R.eqBy(Math.abs), l); //=> [1, 3, 4, -5, 3]
  * ```
  */
-export function useDropRepeatsWith<T>(predicate: MaybeRef<(left: T, right: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useDropRepeatsWith<T>(predicate: MaybeRef<(left: T, right: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useDropRepeatsWith<T>(predicate: MaybeRef<(left: T, right: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -1762,8 +1773,8 @@ export function useDropRepeatsWith<T>(predicate: MaybeRef<(left: T, right: T) =>
  * R.dropWhile(x => x !== 'd' , 'Ramda'); //=> 'da'
  * ```
  */
-export function useDropWhile<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useDropWhile<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useDropWhile<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -1790,8 +1801,8 @@ export function useDropWhile<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWa
  * R.either([false, false, 'a'], [11]) // => [11, 11, "a"]
  * ```
  */
-export function useEither<T extends Pred>(pred1: MaybeRef<T>, pred2: MaybeRef<T>): ComputedRef<T>;
 export function useEither<T extends Pred>(pred1: MaybeRef<T>): (pred2: MaybeRef<T>) => ComputedRef<T>;
+export function useEither<T extends Pred>(pred1: MaybeRef<T>, pred2: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -1831,10 +1842,10 @@ export function useEmpty<T>(x: MaybeRef<T>): ComputedRef<T>;
  * R.endsWith(['b'], ['a', 'b', 'c'])    //=> false
  * ```
  */
-export function useEndsWith(substr: MaybeRef<string>, str: MaybeRef<string>): ComputedRef<boolean>;
 export function useEndsWith(substr: MaybeRef<string>): (str: MaybeRef<string>) => ComputedRef<boolean>;
-export function useEndsWith<T>(subList: MaybeRef<readonly T[]>, list: MaybeRef<readonly T[]>): ComputedRef<boolean>;
 export function useEndsWith<T>(subList: MaybeRef<readonly T[]>): (list: MaybeRef<readonly T[]>) => ComputedRef<boolean>;
+export function useEndsWith(substr: MaybeRef<string>, str: MaybeRef<string>): ComputedRef<boolean>;
+export function useEndsWith<T>(subList: MaybeRef<readonly T[]>, list: MaybeRef<readonly T[]>): ComputedRef<boolean>;
 
 
 /**
@@ -1846,12 +1857,12 @@ export function useEndsWith<T>(subList: MaybeRef<readonly T[]>): (list: MaybeRef
  * R.eqBy(Math.abs, 5, -5); //=> true
  * ```
  */
-export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
-export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
 export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>): {
-  (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
   (a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
+  (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 };
+export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
+export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 
 
 /**
@@ -1866,9 +1877,9 @@ export function useEqBy<T>(fn: MaybeRef<(a: T) => unknown>): {
  * R.eqProps('c', o1, o2); //=> true
  * ```
  */
-export function useEqProps<T, U>(prop: MaybeWatchSource<string>, obj1: MaybeWatchSource<T>, obj2: MaybeWatchSource<U>): ComputedRef<boolean>;
 export function useEqProps<P extends string>(prop: MaybeWatchSource<P>): <T, U>(obj1: MaybeWatchSource<Record<P, T>>, obj2: MaybeWatchSource<Record<P, U>>) => ComputedRef<boolean>;
 export function useEqProps<T>(prop: MaybeWatchSource<string>, obj1: MaybeWatchSource<T>): <U>(obj2: MaybeWatchSource<U>) => ComputedRef<boolean>;
+export function useEqProps<T, U>(prop: MaybeWatchSource<string>, obj1: MaybeWatchSource<T>, obj2: MaybeWatchSource<U>): ComputedRef<boolean>;
 
 
 /**
@@ -1889,9 +1900,9 @@ export function useEqProps<T>(prop: MaybeWatchSource<string>, obj1: MaybeWatchSo
  * R.equals(a, b); //=> true
  * ```
  */
+export function useEquals<T>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
 export function useEquals<T>(__: Placeholder, b: MaybeRef<T>): (a: MaybeRef<T>) => ComputedRef<boolean>;
 export function useEquals<T>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
-export function useEquals<T>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
 
 
 /**
@@ -1913,8 +1924,8 @@ export function useEquals<T>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<bo
  * R.evolve(transformations, tomato); //=> {firstName: 'Tomato', data: {elapsed: 101, remaining: 1399}, id:123}
  * ```
  */
-export function useEvolve<E extends Evolver, V extends Evolvable<E>>(transformations: MaybeWatchSource<E>, obj: MaybeWatchSource<V>): ComputedRef<Evolve<V, E>>;
 export function useEvolve<E extends Evolver>(transformations: MaybeWatchSource<E>): <V extends Evolvable<E>>(obj: MaybeWatchSource<V>) => ComputedRef<Evolve<V, E>>;
+export function useEvolve<E extends Evolver, V extends Evolvable<E>>(transformations: MaybeWatchSource<E>, obj: MaybeWatchSource<V>): ComputedRef<Evolve<V, E>>;
 
 
 /**
@@ -1969,10 +1980,10 @@ export function useFilter<T, C extends readonly T[] | Record<string, T>>(pred: M
  * R.find(R.propEq('a', 4))(xs); //=> undefined
  * ```
  */
-export function useFind<T, P extends T>(pred: MaybeRef<(val: T) => val is P>, list: MaybeWatchSource<readonly T[]>): ComputedRef<P | undefined>;
-export function useFind<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T | undefined>;
 export function useFind<T, P extends T>(pred: MaybeRef<(val: T) => val is P>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<P | undefined>;
 export function useFind<T>(pred: MaybeRef<(val: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T | undefined>;
+export function useFind<T, P extends T>(pred: MaybeRef<(val: T) => val is P>, list: MaybeWatchSource<readonly T[]>): ComputedRef<P | undefined>;
+export function useFind<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T | undefined>;
 
 
 /**
@@ -1990,8 +2001,8 @@ export function useFind<T>(pred: MaybeRef<(val: T) => boolean>): (list: MaybeWat
  * R.findIndex(R.propEq('a', 4))(xs); //=> -1
  * ```
  */
-export function useFindIndex<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 export function useFindIndex<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<number>;
+export function useFindIndex<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 
 
 /**
@@ -2009,10 +2020,10 @@ export function useFindIndex<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWa
  * R.findLast(R.propEq('a', 4))(xs); //=> undefined
  * ```
  */
-export function useFindLast<T, P extends T>(pred: MaybeRef<(val: T) => val is P>, list: MaybeWatchSource<readonly T[]>): ComputedRef<P | undefined>;
-export function useFindLast<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T | undefined>;
 export function useFindLast<T, P extends T>(pred: MaybeRef<(val: T) => val is P>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<P | undefined>;
 export function useFindLast<T>(pred: MaybeRef<(val: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T | undefined>;
+export function useFindLast<T, P extends T>(pred: MaybeRef<(val: T) => val is P>, list: MaybeWatchSource<readonly T[]>): ComputedRef<P | undefined>;
+export function useFindLast<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T | undefined>;
 
 
 /**
@@ -2030,8 +2041,8 @@ export function useFindLast<T>(pred: MaybeRef<(val: T) => boolean>): (list: Mayb
  * R.findLastIndex(R.propEq('a', 4))(xs); //=> -1
  * ```
  */
-export function useFindLastIndex<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 export function useFindLastIndex<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<number>;
+export function useFindLastIndex<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 
 
 /**
@@ -2062,7 +2073,10 @@ export function useFlatten<T extends readonly any[]>(list: MaybeWatchSource<T>):
  * R.flip(mergeThree)(1, 2, 3); //=> [2, 1, 3]
  * ```
  */
-export function useFlip<T, U, TResult>(fn: MaybeRef<(arg0: T, arg1: U) => TResult>): ComputedRef<(arg1: U, arg0?: T) => TResult>;
+export function useFlip<T, U, TResult>(fn: MaybeRef<(arg0: T, arg1: U) => TResult>): ComputedRef<{
+  (arg1: U): (arg0: T) => TResult;
+  (arg1: U, arg0: T): TResult;
+}>;
 export function useFlip<F extends (...args: any) => any, P extends _.F.Parameters<F>>(
   fn: MaybeRef<F>,
 ): ComputedRef<_.F.Curry<(...args: _.T.Merge<[P[1], P[0]], P>) => _.F.Return<F>>>;
@@ -2095,9 +2109,9 @@ export function useFlip<F extends (...args: any) => any, P extends _.F.Parameter
  * // logs 8
  * ```
  */
-export function useForEach<T, U extends readonly T[] = readonly T[]>(fn: MaybeRef<(x: T) => void>, list: MaybeWatchSource<U>): ComputedRef<U>;
-export function useForEach<U extends readonly any[] = readonly any[]>(__: Placeholder, list: MaybeRef<U>): (fn: MaybeWatchSource<(x: U extends readonly (infer T)[] ? T : never) => void>) => ComputedRef<U>;
 export function useForEach<T>(fn: MaybeRef<(x: T) => void>): <U extends readonly T[]>(list: MaybeWatchSource<U>) => ComputedRef<U>;
+export function useForEach<U extends readonly any[] = readonly any[]>(__: Placeholder, list: MaybeRef<U>): (fn: MaybeWatchSource<(x: U extends readonly (infer T)[] ? T : never) => void>) => ComputedRef<U>;
+export function useForEach<T, U extends readonly T[] = readonly T[]>(fn: MaybeRef<(x: T) => void>, list: MaybeWatchSource<U>): ComputedRef<U>;
 
 
 /**
@@ -2114,8 +2128,8 @@ export function useForEach<T>(fn: MaybeRef<(x: T) => void>): <U extends readonly
  * // logs y:2
  * ```
  */
-export function useForEachObjIndexed<T>(fn: MaybeRef<(value: T[keyof T], key: keyof T, obj: T) => void>, obj: MaybeWatchSource<T>): ComputedRef<T>;
 export function useForEachObjIndexed<T>(fn: MaybeRef<(value: T[keyof T], key: keyof T, obj: T) => void>): (obj: MaybeWatchSource<T>) => ComputedRef<T>;
+export function useForEachObjIndexed<T>(fn: MaybeRef<(value: T[keyof T], key: keyof T, obj: T) => void>, obj: MaybeWatchSource<T>): ComputedRef<T>;
 
 
 /**
@@ -2167,8 +2181,9 @@ export function useFromPairs<V>(
  * // }
  * ```
  */
-export function useGroupBy<T, K extends string = string>(fn: MaybeRef<(a: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Record<K, T[]>>;
-export function useGroupBy<T, K extends string = string>(fn: MaybeRef<(a: T) => K>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<Record<K, T[]>>;
+export function useGroupBy<T, K extends string = string>(fn: MaybeRef<(a: T) => K>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<Partial<Record<K, T[]>>>;
+export function useGroupBy<T>(__: Placeholder, list: MaybeRef<readonly T[]>): <K extends string = string>(fn: MaybeWatchSource<(a: T) => K>) => ComputedRef<Partial<Record<K, T[]>>>;
+export function useGroupBy<T, K extends string = string>(fn: MaybeRef<(a: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Partial<Record<K, T[]>>>;
 
 
 /**
@@ -2192,9 +2207,12 @@ export function useGroupBy<T, K extends string = string>(fn: MaybeRef<(a: T) => 
  * //=> ['ae', 'st', 'iou']
  * ```
  */
-export function useGroupWith<T>(fn: MaybeRef<(x: T, y: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[][]>;
-export function useGroupWith<T>(fn: MaybeRef<(x: T, y: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
-export function useGroupWith<T>(fn: MaybeRef<(x: T, y: T) => boolean>, list: MaybeWatchSource<string>): ComputedRef<string[]>;
+export function useGroupWith<T>(fn: MaybeRef<(a: T, b: T) => boolean>): {
+  (list: MaybeWatchSource<string>): ComputedRef<string[]>;
+  (list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
+};
+export function useGroupWith<T>(fn: MaybeRef<(a: T, b: T) => boolean>, list: MaybeWatchSource<string>): ComputedRef<string[]>;
+export function useGroupWith<T>(fn: MaybeRef<(a: T, b: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
 
 
 /**
@@ -2212,11 +2230,9 @@ export function useGroupWith<T>(fn: MaybeRef<(x: T, y: T) => boolean>, list: May
  * R.gt('z', 'a'); //=> true
  * ```
  */
-export function useGt(__: Placeholder, b: MaybeRef<number>): (a: MaybeRef<number>) => ComputedRef<boolean>;
-export function useGt(__: Placeholder): (b: MaybeRef<number>, a: MaybeRef<number>) => ComputedRef<boolean>;
-export function useGt(a: MaybeRef<number>, b: MaybeRef<number>): ComputedRef<boolean>;
-export function useGt(a: MaybeRef<string>, b: MaybeRef<string>): ComputedRef<boolean>;
-export function useGt(a: MaybeRef<number>): (b: MaybeRef<number>) => ComputedRef<boolean>;
+export function useGt<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useGt<T extends Ord>(__: Placeholder, b: MaybeRef<T>): (a: MaybeRef<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useGt<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 
 
 /**
@@ -2234,11 +2250,9 @@ export function useGt(a: MaybeRef<number>): (b: MaybeRef<number>) => ComputedRef
  * R.gte('z', 'a'); //=> true
  * ```
  */
-export function useGte(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<boolean>;
-export function useGte(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<boolean>;
-export function useGte(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<boolean>;
-export function useGte(a: MaybeWatchSource<string>, b: MaybeWatchSource<string>): ComputedRef<boolean>;
-export function useGte(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<boolean>;
+export function useGte<T extends Ord>(a: MaybeWatchSource<T>): (b: MaybeWatchSource<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useGte<T extends Ord>(__: Placeholder, b: MaybeWatchSource<T>): (a: MaybeWatchSource<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useGte<T extends Ord>(a: MaybeWatchSource<T>, b: MaybeWatchSource<T>): ComputedRef<boolean>;
 
 
 /**
@@ -2258,10 +2272,9 @@ export function useGte(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number
  * pointHas('z');  //=> false
  * ```
  */
-export function useHas(__: Placeholder, obj: MaybeWatchSource<unknown>): <P extends string>(s: MaybeWatchSource<P>) => ComputedRef<boolean>;
-export function useHas<P extends string>(s: MaybeWatchSource<P>, obj: MaybeWatchSource<unknown>): obj is ComputedRef<ObjectHavingSome<P>>;
-export function useHas(__: Placeholder): <P extends string>(obj: MaybeWatchSource<unknown>, s: MaybeWatchSource<P>) => obj is ComputedRef<ObjectHavingSome<P>>;
-export function useHas<P extends string>(s: MaybeWatchSource<P>): (obj: MaybeWatchSource<unknown>) => obj is ComputedRef<ObjectHavingSome<P>>;
+export function useHas<K extends PropertyKey>(prop: MaybeWatchSource<K>): (obj: MaybeWatchSource<unknown>) => obj is ComputedRef<ObjectHavingSome<K>>;
+export function useHas(__: Placeholder, obj: MaybeWatchSource<unknown>): <P extends PropertyKey>(s: MaybeWatchSource<P>) => ComputedRef<boolean>;
+export function useHas<K extends PropertyKey>(prop: MaybeWatchSource<K>, obj: MaybeWatchSource<unknown>): obj is ComputedRef<ObjectHavingSome<K>>;
 
 
 
@@ -2284,8 +2297,8 @@ export function useHas<P extends string>(s: MaybeWatchSource<P>): (obj: MaybeWat
  * R.hasIn('area', square);  //=> true
  * ```
  */
-export function useHasIn<T>(s: MaybeWatchSource<string>, obj: MaybeWatchSource<T>): ComputedRef<boolean>;
 export function useHasIn(s: MaybeWatchSource<string>): <T>(obj: MaybeWatchSource<T>) => ComputedRef<boolean>;
+export function useHasIn<T>(s: MaybeWatchSource<string>, obj: MaybeWatchSource<T>): ComputedRef<boolean>;
 
 
 /**
@@ -2302,8 +2315,8 @@ export function useHasIn(s: MaybeWatchSource<string>): <T>(obj: MaybeWatchSource
  * R.hasPath(['a', 'b'], {});                  // => false
  * ```
  */
-export function useHasPath<T>(list: MaybeWatchSource<readonly string[]>, obj: MaybeWatchSource<T>): ComputedRef<boolean>;
 export function useHasPath(list: MaybeWatchSource<readonly string[]>): <T>(obj: MaybeWatchSource<T>) => ComputedRef<boolean>;
+export function useHasPath<T>(list: MaybeWatchSource<readonly string[]>, obj: MaybeWatchSource<T>): ComputedRef<boolean>;
 
 
 /**
@@ -2351,8 +2364,8 @@ export function useHead<T>(list: MaybeWatchSource<readonly T[]>): ComputedRef<T 
  * R.identical(NaN, NaN); //=> true
  * ```
  */
-export function useIdentical<T>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 export function useIdentical<T>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<boolean>;
+export function useIdentical<T>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 
 
 /**
@@ -2430,14 +2443,14 @@ export function useInc(n: MaybeWatchSource<number>): ComputedRef<number>;
  * R.includes('ba', 'banana'); //=>true
  * ```
  */
-export function useIncludes(__: Placeholder, list: MaybeWatchSource<readonly string[] | string>): (s: MaybeWatchSource<string>) => ComputedRef<boolean>;
-export function useIncludes<T>(__: Placeholder, list: MaybeWatchSource<readonly T[]>): (target: MaybeWatchSource<T>) => ComputedRef<boolean>;
-export function useIncludes(__: Placeholder): (list: MaybeWatchSource<readonly string[] | string>, s: MaybeWatchSource<string>) => ComputedRef<boolean>;
-export function useIncludes<T>(__: Placeholder): (list: MaybeWatchSource<readonly T[]>, target: MaybeWatchSource<T>) => ComputedRef<boolean>;
-export function useIncludes(s: MaybeWatchSource<string>, list: MaybeWatchSource<readonly string[] | string>): ComputedRef<boolean>;
 export function useIncludes(s: MaybeWatchSource<string>): (list: MaybeWatchSource<readonly string[] | string>) => ComputedRef<boolean>;
-export function useIncludes<T>(target: MaybeWatchSource<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
 export function useIncludes<T>(target: MaybeWatchSource<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<boolean>;
+
+export function useIncludes(__: Placeholder, list: MaybeWatchSource<string>): (s: MaybeWatchSource<string>) => ComputedRef<boolean>;
+export function useIncludes<T>(__: Placeholder, list: MaybeWatchSource<readonly T[]>): (target: MaybeWatchSource<T>) => ComputedRef<boolean>;
+
+export function useIncludes(s: MaybeWatchSource<string>, list: MaybeWatchSource<string>): ComputedRef<boolean>;
+export function useIncludes<T>(target: MaybeWatchSource<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
 
 
 /**
@@ -2457,17 +2470,17 @@ export function useIncludes<T>(target: MaybeWatchSource<T>): (list: MaybeWatchSo
  * //=> {abc: {id: 'abc', title: 'B'}, xyz: {id: 'xyz', title: 'A'}}
  * ```
  */
-export function useIndexBy<T, K extends string | number = string>(fn: MaybeRef<(a: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<{ [key in K]: T }>;
-export function useIndexBy<T, K extends string | number | undefined = string>(
-  fn: MaybeRef<(a: T) => K>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<{ [key in NonNullable<K>]?: T }>;
 export function useIndexBy<T, K extends string | number = string>(
   fn: MaybeRef<(a: T) => K>,
 ): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [key in K]: T }>;
 export function useIndexBy<T, K extends string | number | undefined = string>(
   fn: MaybeRef<(a: T) => K | undefined>,
 ): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [key in NonNullable<K>]?: T }>;
+export function useIndexBy<T, K extends string | number = string>(fn: MaybeRef<(a: T) => K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<{ [key in K]: T }>;
+export function useIndexBy<T, K extends string | number | undefined = string>(
+  fn: MaybeRef<(a: T) => K>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<{ [key in NonNullable<K>]?: T }>;
 
 
 /**
@@ -2483,10 +2496,10 @@ export function useIndexBy<T, K extends string | number | undefined = string>(
  * R.indexOf(10, [1,2,3,4]); //=> -1
  * ```
  */
-export function useIndexOf(target: MaybeRef<string>, list: MaybeWatchSource<readonly string[] | string>): ComputedRef<number>;
 export function useIndexOf(target: MaybeRef<string>): (list: MaybeWatchSource<readonly string[] | string>) => ComputedRef<number>;
-export function useIndexOf<T>(target: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 export function useIndexOf<T>(target: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<number>;
+export function useIndexOf(target: MaybeRef<string>, list: MaybeWatchSource<readonly string[] | string>): ComputedRef<number>;
+export function useIndexOf<T>(target: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 
 
 /**
@@ -2507,8 +2520,8 @@ export function useIndexOf<T>(target: MaybeRef<T>): (list: MaybeWatchSource<read
  * R.init('');     //=> ''
  * ```
  */
-export function useInit<T>(list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 export function useInit(list: MaybeRef<string>): ComputedRef<string>;
+export function useInit<T>(list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -2539,7 +2552,6 @@ export function useInit(list: MaybeRef<string>): ComputedRef<string>;
  * //=> [{id: 456, name: 'Stephen Stills'}, {id: 177, name: 'Neil Young'}]
  * ```
  */
-export function useInnerJoin<T1, T2>(pred: MaybeRef<(a: T1, b: T2) => boolean>, list1: MaybeWatchSource<readonly T1[]>, list2: MaybeWatchSource<readonly T2[]>): ComputedRef<T1[]>;
 export function useInnerJoin<T1, T2>(
   pred: MaybeRef<(a: T1, b: T2) => boolean>,
 ): (list1: MaybeWatchSource<readonly T1[]>, list2: MaybeWatchSource<readonly T2[]>) => ComputedRef<T1[]>;
@@ -2547,6 +2559,7 @@ export function useInnerJoin<T1, T2>(
   pred: MaybeRef<(a: T1, b: T2) => boolean>,
   list1: MaybeWatchSource<readonly T1[]>,
 ): (list2: MaybeWatchSource<readonly T2[]>) => ComputedRef<T1[]>;
+export function useInnerJoin<T1, T2>(pred: MaybeRef<(a: T1, b: T2) => boolean>, list1: MaybeWatchSource<readonly T1[]>, list2: MaybeWatchSource<readonly T2[]>): ComputedRef<T1[]>;
 
 
 /**
@@ -2560,9 +2573,9 @@ export function useInnerJoin<T1, T2>(
  * R.insert(2, 'x', [1,2,3,4]); //=> [1,2,'x',3,4]
  * ```
  */
-export function useInsert<T>(index: MaybeWatchSource<number>, elt: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-export function useInsert<T>(index: MaybeWatchSource<number>, elt: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useInsert(index: MaybeWatchSource<number>): <T>(elt: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useInsert<T>(index: MaybeWatchSource<number>, elt: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useInsert<T>(index: MaybeWatchSource<number>, elt: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -2575,9 +2588,9 @@ export function useInsert(index: MaybeWatchSource<number>): <T>(elt: MaybeRef<T>
  * R.insertAll(2, ['x','y','z'], [1,2,3,4]); //=> [1,2,'x','y','z',3,4]
  * ```
  */
-export function useInsertAll<T>(index: MaybeWatchSource<number>, elts: MaybeWatchSource<readonly T[]>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-export function useInsertAll<T>(index: MaybeWatchSource<number>, elts: MaybeWatchSource<readonly T[]>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useInsertAll(index: MaybeWatchSource<number>): <T>(elts: MaybeWatchSource<readonly T[]>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useInsertAll<T>(index: MaybeWatchSource<number>, elts: MaybeWatchSource<readonly T[]>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useInsertAll<T>(index: MaybeWatchSource<number>, elts: MaybeWatchSource<readonly T[]>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -2591,8 +2604,8 @@ export function useInsertAll(index: MaybeWatchSource<number>): <T>(elts: MaybeWa
  * R.intersection([1,2,3,4], [7,6,5,4,3]); //=> [4, 3]
  * ```
  */
-export function useIntersection<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useIntersection<T>(list1: MaybeWatchSource<readonly T[]>): (list2: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useIntersection<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -2605,8 +2618,8 @@ export function useIntersection<T>(list1: MaybeWatchSource<readonly T[]>): (list
  * R.intersperse('a', ['b', 'n', 'n', 's']); //=> ['b', 'a', 'n', 'a', 'n', 'a', 's']
  * ```
  */
-export function useIntersperse<T>(separator: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useIntersperse<T>(separator: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useIntersperse<T>(separator: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -2641,10 +2654,10 @@ export function useIntersperse<T>(separator: MaybeRef<T>): (list: MaybeWatchSour
  * intoArray(transducer, numbers); //=> [2, 3]
  * ```
  */
+export function useInto(acc: MaybeRef<any>): <T>(xf: MaybeRef<(...a: readonly any[]) => any>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useInto<T>(acc: MaybeRef<any>, xf: MaybeRef<(...a: readonly any[]) => any>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useInto<T, R>(acc: MaybeRef<any>, xf: MaybeRef<(...a: readonly any[]) => R[]>, list: MaybeWatchSource<readonly T[]>): ComputedRef<R[]>;
 export function useInto(acc: MaybeRef<any>, xf: MaybeRef<(...a: readonly any[]) => any>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
-export function useInto(acc: MaybeRef<any>): <T>(xf: MaybeRef<(...a: readonly any[]) => any>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 
 
 /**
@@ -2744,10 +2757,10 @@ export function useInvoker(arity: MaybeWatchSource<number>, method: MaybeWatchSo
  * R.is(Number, {}); //=> false
  * ```
  */
-export function useIs<C extends (...args: any[]) => any>(ctor: MaybeWatchSource<C>, val: MaybeRef<any>): val is ComputedRef<ReturnType<C>>;
-export function useIs<C extends new (...args: any[]) => any>(ctor: MaybeWatchSource<C>, val: MaybeRef<any>): val is ComputedRef<InstanceType<C>>;
 export function useIs<C extends (...args: any[]) => any>(ctor: MaybeWatchSource<C>): (val: MaybeRef<any>) => val is ComputedRef<ReturnType<C>>;
 export function useIs<C extends new (...args: any[]) => any>(ctor: MaybeWatchSource<C>): (val: MaybeRef<any>) => val is ComputedRef<InstanceType<C>>;
+export function useIs<C extends (...args: any[]) => any>(ctor: MaybeWatchSource<C>, val: MaybeRef<any>): val is ComputedRef<ReturnType<C>>;
+export function useIs<C extends new (...args: any[]) => any>(ctor: MaybeWatchSource<C>, val: MaybeRef<any>): val is ComputedRef<InstanceType<C>>;
 
 
 /**
@@ -2795,7 +2808,7 @@ export function useIsNil(value: MaybeRef<any>): value is ComputedRef<null | unde
  * R.isNotNil([]); //=> true
  * ```
  */
-export function useIsNotNil<T>(value: MaybeRef<T>): value is ComputedRef<_.U.NonNullable<T>>;
+export function useIsNotNil<T>(value: MaybeRef<T>): value is ComputedRef<NonNullable<T>>;
 
 
 /**
@@ -2811,8 +2824,8 @@ export function useIsNotNil<T>(value: MaybeRef<T>): value is ComputedRef<_.U.Non
  * R.join('|', [1, 2, 3]);    //=> '1|2|3'
  * ```
  */
-export function useJoin(x: MaybeWatchSource<string>, xs: MaybeWatchSource<readonly any[]>): ComputedRef<string>;
 export function useJoin(x: MaybeWatchSource<string>): (xs: MaybeWatchSource<readonly any[]>) => ComputedRef<string>;
+export function useJoin(x: MaybeWatchSource<string>, xs: MaybeWatchSource<readonly any[]>): ComputedRef<string>;
 
 
 /**
@@ -2898,10 +2911,10 @@ export function useLast<T extends any>(list: MaybeRef<readonly T[]>): ComputedRe
  * R.lastIndexOf(10, [1,2,3,4]); //=> -1
  * ```
  */
-export function useLastIndexOf(target: MaybeRef<string>, list: MaybeWatchSource<readonly string[] | string>): ComputedRef<number>;
 export function useLastIndexOf(target: MaybeRef<string>): (list: MaybeWatchSource<readonly string[] | string>) => ComputedRef<number>;
-export function useLastIndexOf<T>(target: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 export function useLastIndexOf<T>(target: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<number>;
+export function useLastIndexOf(target: MaybeRef<string>, list: MaybeWatchSource<readonly string[] | string>): ComputedRef<number>;
+export function useLastIndexOf<T>(target: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<number>;
 
 
 /**
@@ -3085,11 +3098,9 @@ export function useLiftN<N extends number, F extends (...args: readonly any[]) =
  * R.lt('z', 'a'); //=> false
  * ```
  */
-export function useLt(__: Placeholder, b: MaybeRef<number>): (a: MaybeRef<number>) => ComputedRef<boolean>;
-export function useLt(__: Placeholder): (b: MaybeRef<number>, a: MaybeRef<number>) => ComputedRef<boolean>;
-export function useLt(a: MaybeRef<number>, b: MaybeRef<number>): ComputedRef<boolean>;
-export function useLt(a: MaybeRef<string>, b: MaybeRef<string>): ComputedRef<boolean>;
-export function useLt(a: MaybeRef<number>): (b: MaybeRef<number>) => ComputedRef<boolean>;
+export function useLt<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useLt<T extends Ord>(__: Placeholder, b: MaybeRef<T>): (a: MaybeRef<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useLt<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<boolean>;
 
 
 /**
@@ -3107,11 +3118,9 @@ export function useLt(a: MaybeRef<number>): (b: MaybeRef<number>) => ComputedRef
  * R.lte('z', 'a'); //=> false
  * ```
  */
-export function useLte(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<boolean>;
-export function useLte(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<boolean>;
-export function useLte(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<boolean>;
-export function useLte(a: MaybeWatchSource<string>, b: MaybeWatchSource<string>): ComputedRef<boolean>;
-export function useLte(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<boolean>;
+export function useLte<T extends Ord>(a: MaybeWatchSource<T>): (b: MaybeWatchSource<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useLte<T extends Ord>(__: Placeholder, b: MaybeWatchSource<T>): (a: MaybeWatchSource<WidenLiterals<T>>) => ComputedRef<boolean>;
+export function useLte<T extends Ord>(a: MaybeWatchSource<T>, b: MaybeWatchSource<T>): ComputedRef<boolean>;
 
 
 /**
@@ -3140,13 +3149,31 @@ export function useLte(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number
  * R.map(double, {x: 1, y: 2, z: 3}); //=> {x: 2, y: 4, z: 6}
  * ```
  */
-export function useMap<T, U>(fn: MaybeRef<(x: T) => U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<U[]>;
-export function useMap<T, U>(fn: MaybeRef<(x: T) => U>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<U[]>;
-export function useMap<T, U>(fn: MaybeRef<(x: T[keyof T & keyof U] | ValueOfUnion<T>) => U[keyof T & keyof U]>, list: MaybeWatchSource<T>): ComputedRef<U>;
-export function useMap<T, U>(fn: MaybeRef<(x: T[keyof T & keyof U] | ValueOfUnion<T>) => U[keyof T & keyof U]>): (list: MaybeWatchSource<T>) => ComputedRef<U>;
-// used in functors
-export function useMap<T, U>(fn: MaybeRef<(x: T) => U>, obj: MaybeWatchSource<Functor<T>>): ComputedRef<Functor<U>>;
-export function useMap<T, U>(fn: MaybeRef<(x: T) => U>): (obj: MaybeWatchSource<Functor<T>>) => ComputedRef<Functor<U>>;
+export function useMap<A, B>(fn: MaybeRef<(x: A) => B>): {
+  // first and last def are the same and are here on purpose
+  // the list variant needs to come before the FunctorMap ones, because `T[]` is a `FunctorMap<T>`
+  (list: MaybeWatchSource<readonly A[]>): ComputedRef<B[]>;
+  (functor: MaybeWatchSource<FunctorFantasyLand<A>>): ComputedRef<FunctorFantasyLand<B>>;
+  (functor: MaybeWatchSource<FunctorMap<A>>): ComputedRef<FunctorMap<B>>;
+  <U extends Record<PropertyKey, A>>(dict: MaybeWatchSource<U>): ComputedRef<Record<keyof U, B>>;
+  // it also needs to be here when you pass map as an argument to a function, eg `compose(map(fn))`
+  (list: MaybeWatchSource<readonly A[]>): ComputedRef<B[]>;
+};
+
+// map(__, list)
+export function useMap<A>(__: Placeholder, list: MaybeRef<readonly A[]>): <B>(fn: MaybeWatchSource<(x: A) => B>) => ComputedRef<B[]>;
+export function useMap<A>(__: Placeholder, obj: MaybeRef<FunctorFantasyLand<A>>): <B>(fn: MaybeWatchSource<(a: A) => B>) => ComputedRef<FunctorFantasyLand<B>>;
+export function useMap<A>(__: Placeholder, obj: MaybeRef<FunctorMap<A>>): <B>(fn: MaybeWatchSource<(a: A) => B>) => ComputedRef<FunctorMap<B>>;
+export function useMap<U extends object>(__: Placeholder, dict: MaybeRef<U>): <B>(fn: MaybeWatchSource<(x: ValueOfUnion<B>) => B>) => ComputedRef<Record<keyof U, B>>;
+// map(fn, list)
+// first and last def are the same and are here on purpose
+// the list variant needs to come before the FunctorMap ones, because `T[]` is a `FunctorMap<T>`
+export function useMap<A, B>(fn: MaybeRef<(x: A) => B>, list: MaybeWatchSource<readonly A[]>): ComputedRef<B[]>;
+export function useMap<A, B>(fn: MaybeRef<(x: A) => B>, obj: MaybeWatchSource<FunctorFantasyLand<A>>): ComputedRef<FunctorFantasyLand<B>>;
+export function useMap<A, B>(fn: MaybeRef<(x: A) => B>, obj: MaybeWatchSource<FunctorMap<A>>): ComputedRef<FunctorMap<B>>;
+export function useMap<U extends object, B>(fn: MaybeRef<(x: ValueOfUnion<U>) => B>, dict: MaybeWatchSource<U>): ComputedRef<Record<keyof U, B>>;
+// it also needs to be here when you pass map as an argument to a function, eg `flip(map)`
+export function useMap<A, B>(fn: MaybeRef<(x: A) => B>, list: MaybeWatchSource<readonly A[]>): ComputedRef<B[]>;
 
 
 /**
@@ -3170,16 +3197,16 @@ export function useMap<T, U>(fn: MaybeRef<(x: T) => U>): (obj: MaybeWatchSource<
  */
 export function useMapAccum<T, U, TResult>(
   fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
-  acc: MaybeRef<U>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<[U, TResult[]]>;
-export function useMapAccum<T, U, TResult>(
-  fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
 ): (acc: MaybeRef<U>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<[U, TResult[]]>;
 export function useMapAccum<T, U, TResult>(
   fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
   acc: MaybeRef<U>,
 ): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<[U, TResult[]]>;
+export function useMapAccum<T, U, TResult>(
+  fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
+  acc: MaybeRef<U>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<[U, TResult[]]>;
 
 
 /**
@@ -3206,16 +3233,16 @@ export function useMapAccum<T, U, TResult>(
  */
 export function useMapAccumRight<T, U, TResult>(
   fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
-  acc: MaybeRef<U>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<[U, TResult[]]>;
-export function useMapAccumRight<T, U, TResult>(
-  fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
 ): (acc: MaybeRef<U>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<[U, TResult[]]>;
 export function useMapAccumRight<T, U, TResult>(
   fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
   acc: MaybeRef<U>,
 ): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<[U, TResult[]]>;
+export function useMapAccumRight<T, U, TResult>(
+  fn: MaybeRef<(acc: U, value: T) => [U, TResult]>,
+  acc: MaybeRef<U>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<[U, TResult[]]>;
 
 
 /**
@@ -3235,18 +3262,18 @@ export function useMapAccumRight<T, U, TResult>(
  */
 export function useMapObjIndexed<T, TResult, TKey extends string>(
   fn: MaybeRef<(value: T, key: TKey, obj?: Record<TKey, T>) => TResult>,
+): (obj: MaybeWatchSource<Record<TKey, T>>) => ComputedRef<Record<TKey, TResult>>;
+export function useMapObjIndexed<T, TResult, TKey extends string>(
+  fn: MaybeRef<(value: T, key: TKey, obj?: PartialRecord<TKey, T>) => TResult>,
+): (obj: MaybeWatchSource<Record<TKey, T>>) => ComputedRef<PartialRecord<TKey, TResult>>;
+export function useMapObjIndexed<T, TResult, TKey extends string>(
+  fn: MaybeRef<(value: T, key: TKey, obj?: Record<TKey, T>) => TResult>,
   obj: MaybeWatchSource<Record<TKey, T>>,
 ): ComputedRef<Record<TKey, TResult>>;
 export function useMapObjIndexed<T, TResult, TKey extends string>(
   fn: MaybeRef<(value: T, key: TKey, obj?: Record<TKey, T>) => TResult>,
   obj: MaybeWatchSource<PartialRecord<TKey, T>>,
 ): ComputedRef<PartialRecord<TKey, TResult>>;
-export function useMapObjIndexed<T, TResult, TKey extends string>(
-  fn: MaybeRef<(value: T, key: TKey, obj?: Record<TKey, T>) => TResult>,
-): (obj: MaybeWatchSource<Record<TKey, T>>) => ComputedRef<Record<TKey, TResult>>;
-export function useMapObjIndexed<T, TResult, TKey extends string>(
-  fn: MaybeRef<(value: T, key: TKey, obj?: PartialRecord<TKey, T>) => TResult>,
-): (obj: MaybeWatchSource<Record<TKey, T>>) => ComputedRef<PartialRecord<TKey, TResult>>;
 export function useMapObjIndexed<T, TResult>(
   fn: MaybeRef<(
     value: T,
@@ -3278,8 +3305,8 @@ export function useMapObjIndexed<T, TResult>(
  * R.match(/a/, null); //=> TypeError: null does not have a method named "match"
  * ```
  */
-export function useMatch(regexp: MaybeWatchSource<RegExp>, str: MaybeWatchSource<string>): ComputedRef<string[]>;
 export function useMatch(regexp: MaybeWatchSource<RegExp>): (str: MaybeWatchSource<string>) => ComputedRef<string[]>;
+export function useMatch(regexp: MaybeWatchSource<RegExp>, str: MaybeWatchSource<string>): ComputedRef<string[]>;
 
 
 /**
@@ -3309,10 +3336,9 @@ export function useMatch(regexp: MaybeWatchSource<RegExp>): (str: MaybeWatchSour
  * seventeenMod(10); //=> 7
  * ```
  */
-export function useMathMod(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useMathMod(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useMathMod(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useMathMod(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useMathMod(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useMathMod(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -3326,8 +3352,8 @@ export function useMathMod(a: MaybeWatchSource<number>): (b: MaybeWatchSource<nu
  * R.max('a', 'b'); //=> 'b'
  * ```
  */
-export function useMax<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 export function useMax<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
+export function useMax<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -3347,9 +3373,9 @@ export function useMax<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<T>) => Compu
  * R.reduce(R.maxBy(square), 0, []); //=> 0
  * ```
  */
-export function useMaxBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
-export function useMaxBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
 export function useMaxBy<T>(keyFn: MaybeRef<(a: T) => Ord>): _.F.Curry<(a: MaybeRef<T>, b: MaybeRef<T>) => ComputedRef<T>>;
+export function useMaxBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
+export function useMaxBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -3453,8 +3479,8 @@ export function useMergeAll<T>(list: MaybeWatchSource<readonly T[]>): ComputedRe
  * //=> { name: 'fred', age: 10, contact: { email: 'moo@example.com' }}
  * ```
  */
-export function useMergeDeepLeft<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<R, [L], 'deep'>>;
 export function useMergeDeepLeft<L extends object>(l: MaybeWatchSource<L>): <R extends object>(r: MaybeWatchSource<R>) => ComputedRef<_.O.Assign<R, [L], 'deep'>>;
+export function useMergeDeepLeft<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<R, [L], 'deep'>>;
 
 
 /**
@@ -3472,8 +3498,8 @@ export function useMergeDeepLeft<L extends object>(l: MaybeWatchSource<L>): <R e
  * //=> { name: 'fred', age: 40, contact: { email: 'baa@example.com' }}
  * ```
  */
-export function useMergeDeepRight<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<L, [R], 'deep'>>;
 export function useMergeDeepRight<L extends object>(l: MaybeWatchSource<L>): <R extends object>(r: MaybeWatchSource<R>) => ComputedRef<_.O.Assign<L, [R], 'deep'>>;
+export function useMergeDeepRight<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<L, [R], 'deep'>>;
 
 
 /**
@@ -3496,9 +3522,9 @@ export function useMergeDeepRight<L extends object>(l: MaybeWatchSource<L>): <R 
  * //=> { a: true, b: true, c: { values: [10, 20, 15, 35] }}
  * ```
  */
-export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>): ComputedRef<any>;
-export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<T1>): (b: MaybeWatchSource<T2>) => ComputedRef<any>;
 export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>): (a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>) => ComputedRef<any>;
+export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<T1>): (b: MaybeWatchSource<T2>) => ComputedRef<any>;
+export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>): ComputedRef<any>;
 
 
 /**
@@ -3522,9 +3548,9 @@ export function useMergeDeepWith<T1, T2>(fn: MaybeRef<(x: any, z: any) => any>):
  * //=> { a: true, b: true, c: { thing: 'bar', values: [10, 20, 15, 35] }}
  * ```
  */
-export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: any) => any>, a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>): ComputedRef<any>;
-export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: any) => any>, a: MaybeWatchSource<T1>): (b: MaybeWatchSource<T2>) => ComputedRef<any>;
 export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: any) => any>): (a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>) => ComputedRef<any>;
+export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: any) => any>, a: MaybeWatchSource<T1>): (b: MaybeWatchSource<T2>) => ComputedRef<any>;
+export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: any) => any>, a: MaybeWatchSource<T1>, b: MaybeWatchSource<T2>): ComputedRef<any>;
 
 
 /**
@@ -3543,8 +3569,8 @@ export function useMergeDeepWithKey<T1, T2>(fn: MaybeRef<(k: string, x: any, z: 
  * resetToDefault({x: 5, y: 2}); //=> {x: 0, y: 2}
  * ```
  */
-export function useMergeLeft<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<R, [L], 'flat'>>;
 export function useMergeLeft<L extends object>(l: MaybeWatchSource<L>): <R extends object>(r: MaybeWatchSource<R>) => ComputedRef<_.O.Assign<R, [L], 'flat'>>;
+export function useMergeLeft<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<R, [L], 'flat'>>;
 
 
 /**
@@ -3563,8 +3589,8 @@ export function useMergeLeft<L extends object>(l: MaybeWatchSource<L>): <R exten
  * withDefaults({y: 2}); //=> {x: 0, y: 2}
  * ```
  */
-export function useMergeRight<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<L, [R], 'flat'>>;
 export function useMergeRight<L extends object>(l: MaybeWatchSource<L>): <R extends object>(r: MaybeWatchSource<R>) => ComputedRef<_.O.Assign<L, [R], 'flat'>>;
+export function useMergeRight<L extends object, R extends object>(l: MaybeWatchSource<L>, r: MaybeWatchSource<R>): ComputedRef<_.O.Assign<L, [R], 'flat'>>;
 
 
 /**
@@ -3583,9 +3609,9 @@ export function useMergeRight<L extends object>(l: MaybeWatchSource<L>): <R exte
  * //=> { a: true, b: true, values: [10, 20, 15, 35] }
  * ```
  */
-export function useMergeWith<U, V>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<U>, b: MaybeWatchSource<V>): ComputedRef<any>;
-export function useMergeWith<U>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<U>): <V>(b: MaybeWatchSource<V>) => ComputedRef<any>;
 export function useMergeWith(fn: MaybeRef<(x: any, z: any) => any>): <U, V>(a: MaybeWatchSource<U>, b: MaybeWatchSource<V>) => ComputedRef<any>;
+export function useMergeWith<U>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<U>): <V>(b: MaybeWatchSource<V>) => ComputedRef<any>;
+export function useMergeWith<U, V>(fn: MaybeRef<(x: any, z: any) => any>, a: MaybeWatchSource<U>, b: MaybeWatchSource<V>): ComputedRef<any>;
 
 
 /**
@@ -3605,9 +3631,9 @@ export function useMergeWith(fn: MaybeRef<(x: any, z: any) => any>): <U, V>(a: M
  * //=> { a: true, b: true, thing: 'bar', values: [10, 20, 15, 35] }
  * ```
  */
-export function useMergeWithKey<U, V>(fn: MaybeRef<(str: string, x: any, z: any) => any>, a: MaybeWatchSource<U>, b: MaybeWatchSource<V>): ComputedRef<any>;
-export function useMergeWithKey<U>(fn: MaybeRef<(str: string, x: any, z: any) => any>, a: MaybeWatchSource<U>): <V>(b: MaybeWatchSource<V>) => ComputedRef<any>;
 export function useMergeWithKey(fn: MaybeRef<(str: string, x: any, z: any) => any>): <U, V>(a: MaybeWatchSource<U>, b: MaybeWatchSource<V>) => ComputedRef<any>;
+export function useMergeWithKey<U>(fn: MaybeRef<(str: string, x: any, z: any) => any>, a: MaybeWatchSource<U>): <V>(b: MaybeWatchSource<V>) => ComputedRef<any>;
+export function useMergeWithKey<U, V>(fn: MaybeRef<(str: string, x: any, z: any) => any>, a: MaybeWatchSource<U>, b: MaybeWatchSource<V>): ComputedRef<any>;
 
 
 /**
@@ -3621,8 +3647,8 @@ export function useMergeWithKey(fn: MaybeRef<(str: string, x: any, z: any) => an
  * R.min('a', 'b'); //=> 'a'
  * ```
  */
-export function useMin<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 export function useMin<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
+export function useMin<T extends Ord>(a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -3642,9 +3668,9 @@ export function useMin<T extends Ord>(a: MaybeRef<T>): (b: MaybeRef<T>) => Compu
  * R.reduce(R.minBy(square), Infinity, []); //=> Infinity
  * ```
  */
-export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
-export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
 export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>): _.F.Curry<(a: MaybeRef<T>, b: MaybeRef<T>) => ComputedRef<T>>;
+export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<T>;
+export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -3661,15 +3687,16 @@ export function useMinBy<T>(keyFn: MaybeRef<(a: T) => Ord>): _.F.Curry<(a: Maybe
  * R.modify('pets', R.append('turtle'), person); //=> {name: 'James', age: 20, pets: ['dog', 'cat', 'turtle']}
  * ```
  */
+export function useModify<K extends string, A, P>(
+  prop: MaybeWatchSource<K>,
+  fn: MaybeRef<(a: A) => P>,
+): <T extends Record<K, A>>(target: MaybeWatchSource<T>) => ComputedRef<Omit<T, K> & Record<K, P>>;
+
 export function useModify<T extends object, K extends keyof T, P>(
   prop: MaybeWatchSource<K>,
   fn: MaybeRef<(a: T[K]) => P>,
   obj: MaybeWatchSource<T>,
 ): ComputedRef<Omit<T, K> & Record<K, P>>;
-export function useModify<K extends string, A, P>(
-  prop: MaybeWatchSource<K>,
-  fn: MaybeRef<(a: A) => P>,
-): <T extends Record<K, A>>(target: MaybeWatchSource<T>) => ComputedRef<Omit<T, K> & Record<K, P>>;
 
 
 /**
@@ -3766,10 +3793,9 @@ export function useModifyPath<B, A = any>(path: MaybeWatchSource<Path>, fn: Mayb
  * isOdd(21); //=> 1
  * ```
  */
-export function useModulo(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useModulo(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useModulo(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useModulo(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useModulo(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useModulo(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -3782,12 +3808,12 @@ export function useModulo(a: MaybeWatchSource<number>): (b: MaybeWatchSource<num
  * R.move(-1, 0, ['a', 'b', 'c', 'd', 'e', 'f']); //=> ['f', 'a', 'b', 'c', 'd', 'e'] list rotation
  * ```
  */
-export function useMove<T>(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-export function useMove(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useMove(from: MaybeWatchSource<number>): {
-  <T>(to: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
   (to: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+  <T>(to: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 };
+export function useMove(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useMove<T>(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -3804,8 +3830,8 @@ export function useMove(from: MaybeWatchSource<number>): {
  * R.multiply(2, 5);  //=> 10
  * ```
  */
-export function useMultiply(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useMultiply(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useMultiply(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -3828,13 +3854,13 @@ export function useMultiply(a: MaybeWatchSource<number>): (b: MaybeWatchSource<n
  * takesOneArg(1, 2); //=> [1, undefined]
  * ```
  */
+export function useNAry<N extends number>(
+  n: MaybeWatchSource<N>,
+): <T extends (...arg: any) => unknown>(fn: MaybeRef<T>) => ComputedRef<(...arg: _.T.Take<Parameters<T>, N>) => ReturnType<T>>;
 export function useNAry<N extends number, T extends (...arg: any) => unknown>(
   n: MaybeWatchSource<N>,
   fn: MaybeRef<T>,
 ): ComputedRef<(...arg: _.T.Take<Parameters<T>, N>) => ReturnType<T>>;
-export function useNAry<N extends number>(
-  n: MaybeWatchSource<N>,
-): <T extends (...arg: any) => unknown>(fn: MaybeRef<T>) => ComputedRef<(...arg: _.T.Take<Parameters<T>, N>) => ReturnType<T>>;
 
 
 /**
@@ -3867,8 +3893,8 @@ export function useNegate(n: MaybeWatchSource<number>): ComputedRef<number>;
  * R.none(isOdd, [1, 3, 5, 7, 8, 11]); //=> false
  * ```
  */
-export function useNone<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
 export function useNone<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<boolean>;
+export function useNone<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<boolean>;
 
 
 /**
@@ -3903,9 +3929,9 @@ export function useNot(value: MaybeRef<any>): ComputedRef<boolean>;
  * R.nth(3, 'abc'); //=> ''
  * ```
  */
-export function useNth<T>(n: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T | undefined>;
-export function useNth(n: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
 export function useNth(n: MaybeWatchSource<number>): <T extends readonly any[] | string>(list: MaybeRef<T>) => ComputedRef<(T extends Array<infer E> ? E : string) | undefined>;
+export function useNth(n: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
+export function useNth<T>(n: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T | undefined>;
 
 
 /**
@@ -3939,14 +3965,12 @@ export function useNthArg(n: MaybeWatchSource<number>): ComputedRef<(...a: reado
  * R.o(R.multiply(10), R.add(10))(-4) //=> 60
  * ```
  */
-export function useO<T1, T2, R>(f: MaybeRef<(x: T2) => R>, g: MaybeRef<(x: T1) => T2>, v: T1): ComputedRef<R>;
-export function useO<T1, T2, R>(f: MaybeRef<(x: T2) => R>, g: MaybeRef<(x: T1) => T2>): ComputedRef<(v: T1) => R>;
-export function useO<T2, R>(
-  f: MaybeRef<(x: T2) => R>,
-): {
-  <T1>(g: MaybeRef<(x: T1) => T2>, v: T1): ComputedRef<R>;
+export function useO<T2, R>(f: MaybeRef<(x: T2) => R>): {
   <T1>(g: MaybeRef<(x: T1) => T2>): ComputedRef<(v: T1) => R>;
+  <T1>(g: MaybeRef<(x: T1) => T2>, v: T1): ComputedRef<R>;
 };
+export function useO<T1, T2, R>(f: MaybeRef<(x: T2) => R>, g: MaybeRef<(x: T1) => T2>): ComputedRef<(v: T1) => R>;
+export function useO<T1, T2, R>(f: MaybeRef<(x: T2) => R>, g: MaybeRef<(x: T1) => T2>, v: T1): ComputedRef<R>;
 
 
 /**
@@ -3963,8 +3987,33 @@ export function useO<T2, R>(
  * matchPhrases(['foo', 'bar', 'baz']); //=> {must: [{match_phrase: 'foo'}, {match_phrase: 'bar'}, {match_phrase: 'baz'}]}
  * ```
  */
-export function useObjOf<T, K extends string>(key: MaybeWatchSource<K>, value: MaybeRef<T>): ComputedRef<Record<K, T>>;
 export function useObjOf<K extends string>(key: MaybeWatchSource<K>): <T>(value: MaybeRef<T>) => ComputedRef<Record<K, T>>;
+export function useObjOf<T, K extends string>(key: MaybeWatchSource<K>, value: MaybeRef<T>): ComputedRef<Record<K, T>>;
+
+
+/**
+ * Given a constructor and a value, returns a new instance of that constructor
+ * containing the value.
+ * 
+ * Dispatches to the `fantasy-land/of` method of the constructor first (if present)
+ * or to the `of` method last (if present). When neither are present, wraps the
+ * value in an array.
+ * 
+ * Note this `of` is different from the ES6 `of`; See
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/of
+ *
+ * @example
+ * ```typescript
+ * R.of(Array, 42);   //=> [42]
+ * R.of(Array, [42]); //=> [[42]]
+ * R.of(Maybe, 42);   //=> Maybe.Just(42)
+ * ```
+ */
+export function useOf<Ctor extends { of: (value: any) => any; }>(ctor: MaybeWatchSource<Ctor>): <T extends Parameters<Ctor['of']>[0]>(val: MaybeRef<T>) => ComputedRef<Ctor extends ArrayConstructor ? T[] : ReturnType<Ctor['of']>>;
+// of(__, val)(ctor)
+export function useOf<T>(__: Placeholder, val: MaybeWatchSource<T>): <Ctor extends { of: (value: any) => any; }>(ctor: MaybeRef<Ctor>) => ComputedRef<Ctor extends ArrayConstructor ? T[] : ReturnType<Ctor['of']>>;
+// of(ctor, val)
+export function useOf<Ctor extends { of: (value: any) => any; }, T extends Parameters<Ctor['of']>[0]>(ctor: MaybeWatchSource<Ctor>, val: MaybeRef<T>): ComputedRef<Ctor extends ArrayConstructor ? T[] : ReturnType<Ctor['of']>>;
 
 
 /**
@@ -3977,8 +4026,8 @@ export function useObjOf<K extends string>(key: MaybeWatchSource<K>): <T>(value:
  * R.omit(['a', 'd'], {a: 1, b: 2, c: 3, d: 4}); //=> {b: 2, c: 3}
  * ```
  */
-export function useOmit<T, K extends string>(names: MaybeWatchSource<readonly K[]>, obj: MaybeWatchSource<T>): ComputedRef<Omit<T, K>>;
 export function useOmit<K extends string>(names: MaybeWatchSource<readonly K[]>): <T>(obj: MaybeWatchSource<T>) => ComputedRef<Omit<T, K>>;
+export function useOmit<T, K extends string>(names: MaybeWatchSource<readonly K[]>, obj: MaybeWatchSource<T>): ComputedRef<Omit<T, K>>;
 
 
 /**
@@ -3996,29 +4045,31 @@ export function useOmit<K extends string>(names: MaybeWatchSource<readonly K[]>)
  * containsInsensitive('o', 'FOO'); //=> true
  * ```
  */
-export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
-export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
-export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>): {
-  (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
-  (a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
-};
 export function useOn<U, R>(combine: MaybeRef<(a: U, b: U) => R>): {
-  <T>(transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
-  <T>(transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
   <T>(transform: MaybeRef<(value: T) => U>): {
-    (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
     (a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+    (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
   };
+  <T>(transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+  <T>(transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
 };
+
 // For manually specifying overloads
 export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>): {
-  (transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
-  (transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
   (transform: MaybeRef<(value: T) => U>): {
-    (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
     (a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+    (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
   };
+  (transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+  (transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
 };
+
+export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>): {
+  (a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+  (a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
+};
+export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>): (b: MaybeRef<T>) => ComputedRef<R>;
+export function useOn<T, U, R>(combine: MaybeRef<(a: U, b: U) => R>, transform: MaybeRef<(value: T) => U>, a: MaybeRef<T>, b: MaybeRef<T>): ComputedRef<R>;
 
 
 /**
@@ -4051,8 +4102,8 @@ export function useOnce<F extends (...a: readonly any[]) => any>(fn: MaybeRef<F>
  * R.or(false, false); //=> false
  * ```
  */
-export function useOr<T, U>(a: MaybeRef<T | Falsy>, b: MaybeRef<U>): ComputedRef<T | U>;
 export function useOr<T>(a: MaybeRef<T | Falsy>): <U>(b: MaybeRef<U>) => ComputedRef<T | U>;
+export function useOr<T, U>(a: MaybeRef<T | Falsy>, b: MaybeRef<U>): ComputedRef<T | U>;
 
 
 /**
@@ -4076,8 +4127,8 @@ export function useOr<T>(a: MaybeRef<T | Falsy>): <U>(b: MaybeRef<U>) => Compute
  * recoverFromFailure(12345).then(console.log);
  * ```
  */
-export function useOtherwise<A, B>(onError: MaybeRef<(error: any) => B | Promise<B>>, promise: MaybeWatchSource<Promise<A>>): ComputedRef<Promise<B>>;
 export function useOtherwise<A, B>(onError: MaybeRef<(error: any) => B | Promise<B>>): (promise: MaybeWatchSource<Promise<A>>) => ComputedRef<Promise<B>>;
+export function useOtherwise<A, B>(onError: MaybeRef<(error: any) => B | Promise<B>>, promise: MaybeWatchSource<Promise<A>>): ComputedRef<Promise<B>>;
 
 
 /**
@@ -4094,9 +4145,12 @@ export function useOtherwise<A, B>(onError: MaybeRef<(error: any) => B | Promise
  * R.over(headLens, R.toUpper, ['foo', 'bar', 'baz']); //=> ['FOO', 'bar', 'baz']
  * ```
  */
-export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>, fn: MaybeRef<(a: A) => A>, value: MaybeRef<S>): ComputedRef<S>;
+export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>): {
+  (fn: MaybeRef<(a: A) => A>): (value: MaybeRef<S>) => ComputedRef<S>;
+  (fn: MaybeRef<(a: A) => A>, value: MaybeRef<S>): ComputedRef<S>;
+};
 export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>, fn: MaybeRef<(a: A) => A>): (value: MaybeRef<S>) => ComputedRef<S>;
-export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>): (fn: MaybeRef<(a: A) => A>, value: MaybeRef<S>) => ComputedRef<S>;
+export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>, fn: MaybeRef<(a: A) => A>, value: MaybeRef<S>): ComputedRef<S>;
 
 
 /**
@@ -4109,8 +4163,8 @@ export function useOver<S, A>(lens: MaybeWatchSource<Lens<S, A>>): (fn: MaybeRef
  * R.pair('foo', 'bar'); //=> ['foo', 'bar']
  * ```
  */
-export function usePair<F, S>(fst: MaybeRef<F>, snd: MaybeRef<S>): ComputedRef<[F, S]>;
 export function usePair<F>(fst: MaybeRef<F>): <S>(snd: MaybeRef<S>) => ComputedRef<[F, S]>;
+export function usePair<F, S>(fst: MaybeRef<F>, snd: MaybeRef<S>): ComputedRef<[F, S]>;
 
 
 /**
@@ -4173,8 +4227,8 @@ export function usePartial<T>(fn: MaybeRef<(...a: readonly any[]) => T>, args: M
  * sayHelloToMs({ firstName: 'Jane', lastName: 'Jones' }); //=> 'Hello, Ms. Jane Jones!'
  * ```
  */
-export function usePartialObject<T extends P1, P1, R>(fn: MaybeRef<(value: T) => R>, partial: MaybeWatchSource<P1>): ComputedRef<(value: Omit<T, keyof P1>) => R>;
 export function usePartialObject<T, R>(fn: MaybeRef<(value: T) => R>): <P1>(partial: MaybeWatchSource<P1>) => ComputedRef<(value: Omit<T, keyof P1>) => R>;
+export function usePartialObject<T extends P1, P1, R>(fn: MaybeRef<(value: T) => R>, partial: MaybeWatchSource<P1>): ComputedRef<(value: Omit<T, keyof P1>) => R>;
 
 
 /**
@@ -4229,10 +4283,10 @@ export function usePartialRight<T>(fn: MaybeRef<(...a: readonly any[]) => T>, ar
  * // => [ { a: 'sss', foo: 'bars' }, { b: 'ttt' }  ]
  * ```
  */
+export function usePartition(fn: MaybeRef<(a: string) => boolean>): (list: MaybeWatchSource<readonly string[]>) => ComputedRef<[string[], string[]]>;
+export function usePartition<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<[T[], T[]]>;
 export function usePartition(fn: MaybeRef<(a: string) => boolean>, list: MaybeWatchSource<readonly string[]>): ComputedRef<[string[], string[]]>;
 export function usePartition<T>(fn: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
-export function usePartition<T>(fn: MaybeRef<(a: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<[T[], T[]]>;
-export function usePartition(fn: MaybeRef<(a: string) => boolean>): (list: MaybeWatchSource<readonly string[]>) => ComputedRef<[string[], string[]]>;
 
 
 /**
@@ -4303,9 +4357,12 @@ export function usePath<T>(path: MaybeWatchSource<Path>): (obj: MaybeWatchSource
  * R.filter(isFamous, users); //=> [ user1 ]
  * ```
  */
-export function usePathEq(path: MaybeRef<Path>, val: MaybeWatchSource<any>, obj: MaybeWatchSource<any>): ComputedRef<boolean>;
-export function usePathEq(path: MaybeRef<Path>, val: MaybeWatchSource<any>): (obj: MaybeWatchSource<any>) => ComputedRef<boolean>;
-export function usePathEq(path: MaybeRef<Path>): _.F.Curry<(a: MaybeWatchSource<any>, b: MaybeWatchSource<any>) => ComputedRef<boolean>>;
+export function usePathEq(val: MaybeRef<any>): {
+  (path: MaybeWatchSource<Path>): (obj: MaybeWatchSource<any>) => ComputedRef<boolean>;
+  (path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<boolean>;
+};
+export function usePathEq(val: MaybeRef<any>, path: MaybeWatchSource<Path>): (obj: MaybeWatchSource<any>) => ComputedRef<boolean>;
+export function usePathEq(val: MaybeRef<any>, path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<boolean>;
 
 
 /**
@@ -4318,9 +4375,9 @@ export function usePathEq(path: MaybeRef<Path>): _.F.Curry<(a: MaybeWatchSource<
  * R.pathOr('N/A', ['a', 'b'], {c: {b: 2}}); //=> "N/A"
  * ```
  */
-export function usePathOr<T>(defaultValue: MaybeRef<T>, path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<T>;
-export function usePathOr<T>(defaultValue: MaybeRef<T>, path: MaybeWatchSource<Path>): (obj: MaybeWatchSource<any>) => ComputedRef<T>;
 export function usePathOr<T>(defaultValue: MaybeRef<T>): _.F.Curry<(a: MaybeWatchSource<Path>, b: MaybeWatchSource<any>) => ComputedRef<T>>;
+export function usePathOr<T>(defaultValue: MaybeRef<T>, path: MaybeWatchSource<Path>): (obj: MaybeWatchSource<any>) => ComputedRef<T>;
+export function usePathOr<T>(defaultValue: MaybeRef<T>, path: MaybeWatchSource<Path>, obj: MaybeWatchSource<any>): ComputedRef<T>;
 
 
 /**
@@ -4334,8 +4391,8 @@ export function usePathOr<T>(defaultValue: MaybeRef<T>): _.F.Curry<(a: MaybeWatc
  * R.paths([['a', 'b'], ['p', 'r']], {a: {b: 2}, p: [{q: 3}]}); //=> [2, undefined]
  * ```
  */
-export function usePaths<T>(paths: MaybeWatchSource<Path[]>, obj: MaybeWatchSource<any>): ComputedRef<Array<T | undefined>>;
 export function usePaths<T>(paths: MaybeWatchSource<Path[]>): (obj: MaybeWatchSource<any>) => ComputedRef<Array<T | undefined>>;
+export function usePaths<T>(paths: MaybeWatchSource<Path[]>, obj: MaybeWatchSource<any>): ComputedRef<Array<T | undefined>>;
 
 
 /**
@@ -4350,9 +4407,9 @@ export function usePaths<T>(paths: MaybeWatchSource<Path[]>): (obj: MaybeWatchSo
  * R.pathSatisfies(R.is(Object), [], {x: {y: 2}}); //=> true
  * ```
  */
-export function usePathSatisfies<T, U>(pred: MaybeRef<(val: T) => boolean>, path: MaybeWatchSource<Path>, obj: MaybeRef<U>): ComputedRef<boolean>;
-export function usePathSatisfies<T, U>(pred: MaybeRef<(val: T) => boolean>, path: MaybeWatchSource<Path>): (obj: MaybeRef<U>) => ComputedRef<boolean>;
 export function usePathSatisfies<T, U>(pred: MaybeRef<(val: T) => boolean>): _.F.Curry<(a: MaybeWatchSource<Path>, b: MaybeRef<U>) => ComputedRef<boolean>>;
+export function usePathSatisfies<T, U>(pred: MaybeRef<(val: T) => boolean>, path: MaybeWatchSource<Path>): (obj: MaybeRef<U>) => ComputedRef<boolean>;
+export function usePathSatisfies<T, U>(pred: MaybeRef<(val: T) => boolean>, path: MaybeWatchSource<Path>, obj: MaybeRef<U>): ComputedRef<boolean>;
 
 
 /**
@@ -4408,9 +4465,9 @@ export function usePick<K extends string | number | symbol>(
  * R.pickAll(['a', 'e', 'f'], {a: 1, b: 2, c: 3, d: 4}); //=> {a: 1, e: undefined, f: undefined}
  * ```
  */
+export function usePickAll(names: MaybeWatchSource<readonly string[]>): <T, U>(obj: MaybeWatchSource<T>) => ComputedRef<U>;
 export function usePickAll<T, K extends keyof T>(names: MaybeWatchSource<readonly K[]>, obj: MaybeWatchSource<T>): ComputedRef<Pick<T, K>>;
 export function usePickAll<T, U>(names: MaybeWatchSource<readonly string[]>, obj: MaybeWatchSource<T>): ComputedRef<U>;
-export function usePickAll(names: MaybeWatchSource<readonly string[]>): <T, U>(obj: MaybeWatchSource<T>) => ComputedRef<U>;
 
 
 /**
@@ -4425,8 +4482,8 @@ export function usePickAll(names: MaybeWatchSource<readonly string[]>): <T, U>(o
  * R.pickBy(isUpperCase, {a: 1, b: 2, A: 3, B: 4}); //=> {A: 3, B: 4}
  * ```
  */
-export function usePickBy<T, U>(pred: MaybeRef<ObjPred<T>>, obj: MaybeWatchSource<T>): ComputedRef<U>;
 export function usePickBy<T>(pred: MaybeRef<ObjPred<T>>): <U, V extends T>(obj: MaybeWatchSource<V>) => ComputedRef<U>;
+export function usePickBy<T, U>(pred: MaybeRef<ObjPred<T>>, obj: MaybeWatchSource<T>): ComputedRef<U>;
 
 
 /**
@@ -4519,13 +4576,13 @@ export function usePipe<TArgs extends any[], R1>(f1: MaybeRef<(...args: TArgs) =
  * f(3, 4); // -(3^4) + 1
  * ```
  */
+export function usePipeWith(
+  transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
+): <TArgs extends any[], TResult>(fns: MaybeWatchSource<AtLeastOneFunctionsFlow<TArgs, TResult>>) => ComputedRef<(...args: TArgs) => TResult>;
 export function usePipeWith<TArgs extends any[], TResult>(
   transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
   fns: MaybeWatchSource<AtLeastOneFunctionsFlow<TArgs, TResult>>,
 ): ComputedRef<(...args: TArgs) => TResult>;
-export function usePipeWith(
-  transformer: MaybeRef<(fn: (...args: any[]) => any, intermediatResult: any) => any>,
-): <TArgs extends any[], TResult>(fns: MaybeWatchSource<AtLeastOneFunctionsFlow<TArgs, TResult>>) => ComputedRef<(...args: TArgs) => TResult>;
 
 
 /**
@@ -4547,10 +4604,10 @@ export function usePipeWith(
  * R.pluck('val', {a: {val: 3}, b: {val: 5}}); //=> {a: 3, b: 5}
  * ```
  */
-export function usePluck<K extends keyof T, T>(p: MaybeWatchSource<K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Array<T[K]>>;
-export function usePluck<T>(p: MaybeWatchSource<number>, list: MaybeWatchSource<Array<{ [k: number]: T }>>): ComputedRef<T[]>;
 export function usePluck<P extends string>(p: MaybeWatchSource<P>): <T>(list: MaybeWatchSource<Array<Record<P, T>>>) => ComputedRef<T[]>;
 export function usePluck(p: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<Array<{ [k: number]: T }>>) => ComputedRef<T[]>;
+export function usePluck<K extends keyof T, T>(p: MaybeWatchSource<K>, list: MaybeWatchSource<readonly T[]>): ComputedRef<Array<T[K]>>;
+export function usePluck<T>(p: MaybeWatchSource<number>, list: MaybeWatchSource<Array<{ [k: number]: T }>>): ComputedRef<T[]>;
 
 
 /**
@@ -4564,8 +4621,8 @@ export function usePluck(p: MaybeWatchSource<number>): <T>(list: MaybeWatchSourc
  * R.prepend('fee', ['fi', 'fo', 'fum']); //=> ['fee', 'fi', 'fo', 'fum']
  * ```
  */
-export function usePrepend<T>(el: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function usePrepend<T>(el: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function usePrepend<T>(el: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -4594,8 +4651,8 @@ export function useProduct(list: MaybeWatchSource<readonly number[]>): ComputedR
  * R.project(['name', 'grade'], kids); //=> [{name: 'Abby', grade: 2}, {name: 'Fred', grade: 7}]
  * ```
  */
-export function useProject<T, U>(props: MaybeWatchSource<readonly string[]>, objs: MaybeWatchSource<readonly T[]>): ComputedRef<U[]>;
 export function useProject<T, U>(props: MaybeWatchSource<readonly string[]>): (objs: MaybeWatchSource<readonly T[]>) => ComputedRef<U[]>;
+export function useProject<T, U>(props: MaybeWatchSource<readonly string[]>, objs: MaybeWatchSource<readonly T[]>): ComputedRef<U[]>;
 
 
 /**
@@ -4616,9 +4673,9 @@ export function useProject<T, U>(props: MaybeWatchSource<readonly string[]>): (o
  * decodeString("ziuli") //=> "ramda"
  * ```
  */
-export function usePromap<A, B, C, D>(pre: MaybeRef<(value: A) => B>, post: MaybeRef<(value: C) => D>, fn: MaybeWatchSource<(value: B) => C>): ComputedRef<(value: A) => D>;
-export function usePromap<A, B, C, D>(pre: MaybeRef<(value: A) => B>, post: MaybeRef<(value: C) => D>): (fn: MaybeWatchSource<(value: B) => C>) => ComputedRef<(value: A) => D>;
 export function usePromap<A, B>(pre: MaybeRef<(value: A) => B>): <C, D>(post: MaybeRef<(value: C) => D>, fn: MaybeWatchSource<(value: B) => C>) => ComputedRef<(value: A) => D>;
+export function usePromap<A, B, C, D>(pre: MaybeRef<(value: A) => B>, post: MaybeRef<(value: C) => D>): (fn: MaybeWatchSource<(value: B) => C>) => ComputedRef<(value: A) => D>;
+export function usePromap<A, B, C, D>(pre: MaybeRef<(value: A) => B>, post: MaybeRef<(value: C) => D>, fn: MaybeWatchSource<(value: B) => C>): ComputedRef<(value: A) => D>;
 
 
 /**
@@ -4665,14 +4722,14 @@ export function useProp<V>(p: MaybeWatchSource<keyof never>): (value: MaybeWatch
  * R.filter(hasBrownHair, kids); //=> [fred, rusty]
  * ```
  */
-export function usePropEq<K extends string | number>(val: MaybeRef<any>, name: MaybeWatchSource<K>, obj: MaybeRef<Record<K, any>>): ComputedRef<boolean>;
-export function usePropEq<K extends string | number>(val: MaybeRef<any>, name: MaybeWatchSource<K>): (obj: MaybeRef<Record<K, any>>) => ComputedRef<boolean>;
 export function usePropEq<K extends string | number>(
   val: MaybeRef<any>,
 ): {
-  (name: MaybeWatchSource<K>, obj: MaybeRef<Record<K, any>>): ComputedRef<boolean>;
   (name: MaybeWatchSource<K>): (obj: MaybeRef<Record<K, any>>) => ComputedRef<boolean>;
+  (name: MaybeWatchSource<K>, obj: MaybeRef<Record<K, any>>): ComputedRef<boolean>;
 };
+export function usePropEq<K extends string | number>(val: MaybeRef<any>, name: MaybeWatchSource<K>): (obj: MaybeRef<Record<K, any>>) => ComputedRef<boolean>;
+export function usePropEq<K extends string | number>(val: MaybeRef<any>, name: MaybeWatchSource<K>, obj: MaybeRef<Record<K, any>>): ComputedRef<boolean>;
 
 
 /**
@@ -4739,11 +4796,14 @@ export function usePropIs<C extends new (...args: any[]) => any>(
  * favoriteWithDefault(alice);  //=> 'Ramda'
  * ```
  */
-export function usePropOr<T, U>(val: MaybeRef<T>, __: Placeholder, obj: MaybeWatchSource<U>): <V>(p: MaybeWatchSource<string>) => ComputedRef<V>;
-export function usePropOr<U>(__: Placeholder, p: MaybeRef<string>, obj: MaybeWatchSource<U>): <T, V>(val: MaybeWatchSource<T>) => ComputedRef<V>;
-export function usePropOr<T, U, V>(val: MaybeRef<T>, p: MaybeWatchSource<string>, obj: MaybeWatchSource<U>): ComputedRef<V>;
+export function usePropOr<T>(val: MaybeRef<T>): {
+  (p: MaybeWatchSource<string>): <U, V>(obj: MaybeWatchSource<U>) => ComputedRef<V>
+  <U, V>(p: MaybeWatchSource<string>, obj: MaybeWatchSource<U>): ComputedRef<V>
+};
 export function usePropOr<T>(val: MaybeRef<T>, p: MaybeWatchSource<string>): <U, V>(obj: MaybeWatchSource<U>) => ComputedRef<V>;
-export function usePropOr<T>(val: MaybeRef<T>): <U, V>(p: MaybeWatchSource<string>, obj: MaybeWatchSource<U>) => ComputedRef<V>;
+export function usePropOr<U>(__: Placeholder, p: MaybeRef<string>, obj: MaybeWatchSource<U>): <T, V>(val: MaybeWatchSource<T>) => ComputedRef<V>;
+export function usePropOr<T, U>(val: MaybeRef<T>, __: Placeholder, obj: MaybeWatchSource<U>): <V>(p: MaybeWatchSource<string>) => ComputedRef<V>;
+export function usePropOr<T, U, V>(val: MaybeRef<T>, p: MaybeWatchSource<string>, obj: MaybeWatchSource<U>): ComputedRef<V>;
 
 
 /**
@@ -4761,9 +4821,9 @@ export function usePropOr<T>(val: MaybeRef<T>): <U, V>(p: MaybeWatchSource<strin
  * fullName({last: 'Bullet-Tooth', age: 33, first: 'Tony'}); //=> 'Tony Bullet-Tooth'
  * ```
  */
-export function useProps<P extends string, T>(ps: MaybeWatchSource<readonly P[]>, obj: MaybeWatchSource<Record<P, T>>): ComputedRef<T[]>;
-export function useProps<P extends string>(ps: MaybeWatchSource<readonly P[]>): <T>(obj: MaybeWatchSource<Record<P, T>>) => ComputedRef<T[]>;
 export function useProps<P extends string, T>(ps: MaybeWatchSource<readonly P[]>): (obj: MaybeWatchSource<Record<P, T>>) => ComputedRef<T[]>;
+export function useProps<P extends string>(ps: MaybeWatchSource<readonly P[]>): <T>(obj: MaybeWatchSource<Record<P, T>>) => ComputedRef<T[]>;
+export function useProps<P extends string, T>(ps: MaybeWatchSource<readonly P[]>, obj: MaybeWatchSource<Record<P, T>>): ComputedRef<T[]>;
 
 
 /**
@@ -4805,8 +4865,8 @@ export function usePropSatisfies(pred: MaybeRef<(val: any) => boolean>): _.F.Cur
  * R.range(50, 53);  //=> [50, 51, 52]
  * ```
  */
-export function useRange(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>): ComputedRef<number[]>;
 export function useRange(from: MaybeWatchSource<number>): (to: MaybeWatchSource<number>) => ComputedRef<number[]>;
+export function useRange(from: MaybeWatchSource<number>, to: MaybeWatchSource<number>): ComputedRef<number[]>;
 
 
 /**
@@ -4851,18 +4911,43 @@ export function useRange(from: MaybeWatchSource<number>): (to: MaybeWatchSource<
  * //  0   1            0   1
  * ```
  */
-export function useReduce<T, TResult>(
-  fn: MaybeRef<(acc: TResult, elem: T) => TResult | Reduced<TResult>>,
-  acc: MaybeRef<TResult>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<TResult>;
-export function useReduce<T, TResult>(
-  fn: MaybeRef<(acc: TResult, elem: T) => TResult | Reduced<TResult>>,
-): (acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>;
-export function useReduce<T, TResult>(
-  fn: MaybeRef<(acc: TResult, elem: T) => TResult | Reduced<TResult>>,
-  acc: MaybeRef<TResult>,
-): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>;
+export function useReduce<T, U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>): {
+  // reduce(f)(acc)(list)
+  (acc: MaybeRef<U>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<U>;
+  // reduce(f)(__, list)(acc)
+  (__: Placeholder, list: MaybeRef<readonly T[]>): (acc: MaybeWatchSource<U>) => ComputedRef<U>;
+  // reduce(f)(acc, list)
+  (acc: MaybeRef<U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<U>;
+};
+// reduce(__, acc)
+export function useReduce<U>(__: Placeholder, acc: MaybeRef<U>): {
+  // reduce(__, acc)(f)(list)
+  <T>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<U>;
+  // reduce(__, acc)(__, list)(f)
+  <T>(__: Placeholder, list: MaybeRef<readonly T[]>): (f: MaybeWatchSource<(acc: U, elem: T) => U | Reduced<U>>) => ComputedRef<U>;
+  // reduce(__, acc)(f, list)
+  <T>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>, list: MaybeWatchSource<readonly T[]>): ComputedRef<U>;
+};
+// reduce(f, acc)(list)
+export function useReduce<T, U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>, acc: MaybeRef<U>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<U>;
+// reduce(_, _, list)
+export function useReduce<T>(__: Placeholder, __2: Placeholder, list: MaybeRef<readonly T[]>): {
+  // reduce(__, __, list)(f)(acc)
+  <U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>): (acc: MaybeWatchSource<U>) => ComputedRef<U>;
+  // reduce(__, __, list)(__, acc)(f)
+  <U>(__: Placeholder, acc: MaybeRef<U>): (f: MaybeWatchSource<(acc: U, elem: T) => U | Reduced<U>>) => ComputedRef<U>;
+  // reduce(__, __, list)(f, acc)
+  <U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>, acc: MaybeWatchSource<U>): ComputedRef<U>;
+};
+// reduce(f, _, list)(acc)
+export function useReduce<T, U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>, __: Placeholder, list: MaybeRef<readonly T[]>): (acc: MaybeWatchSource<U>) => ComputedRef<U>;
+// reduce(__, acc, list)(f)
+export function useReduce<T, U>(__: Placeholder, acc: MaybeRef<U>, list: MaybeRef<readonly T[]>): (f: MaybeWatchSource<(acc: U, elem: T) => U | Reduced<U>>) => ComputedRef<U>;
+// reduce(f, acc, list)
+export function useReduce<T, U>(f: MaybeRef<(acc: U, elem: T) => U | Reduced<U>>, acc: MaybeRef<U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<U>;
+
+
+
 
 
 /**
@@ -4901,10 +4986,11 @@ export function useReduce<T, TResult>(
  */
 export function useReduceBy<T, TResult>(
   valueFn: MaybeRef<(acc: TResult, elem: T) => TResult>,
+): _.F.Curry<(a: MaybeRef<TResult>, b: MaybeRef<(elem: T) => string>, c: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [index: string]: TResult }>>;
+export function useReduceBy<T, TResult>(
+  valueFn: MaybeRef<(acc: TResult, elem: T) => TResult>,
   acc: MaybeRef<TResult>,
-  keyFn: MaybeRef<(elem: T) => string>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<{ [index: string]: TResult }>;
+): _.F.Curry<(a: MaybeRef<(elem: T) => string>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [index: string]: TResult }>>;
 export function useReduceBy<T, TResult>(
   valueFn: MaybeRef<(acc: TResult, elem: T) => TResult>,
   acc: MaybeRef<TResult>,
@@ -4913,10 +4999,9 @@ export function useReduceBy<T, TResult>(
 export function useReduceBy<T, TResult>(
   valueFn: MaybeRef<(acc: TResult, elem: T) => TResult>,
   acc: MaybeRef<TResult>,
-): _.F.Curry<(a: MaybeRef<(elem: T) => string>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [index: string]: TResult }>>;
-export function useReduceBy<T, TResult>(
-  valueFn: MaybeRef<(acc: TResult, elem: T) => TResult>,
-): _.F.Curry<(a: MaybeRef<TResult>, b: MaybeRef<(elem: T) => string>, c: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [index: string]: TResult }>>;
+  keyFn: MaybeRef<(elem: T) => string>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<{ [index: string]: TResult }>;
 
 
 /**
@@ -4985,16 +5070,16 @@ export function useReduced<T>(elem: MaybeRef<T>): ComputedRef<Reduced<T>>;
  */
 export function useReduceRight<T, TResult>(
   fn: MaybeRef<(elem: T, acc: TResult) => TResult>,
-  acc: MaybeRef<TResult>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<TResult>;
-export function useReduceRight<T, TResult>(
-  fn: MaybeRef<(elem: T, acc: TResult) => TResult>,
 ): (acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>;
 export function useReduceRight<T, TResult>(
   fn: MaybeRef<(elem: T, acc: TResult) => TResult>,
   acc: MaybeRef<TResult>,
 ): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>;
+export function useReduceRight<T, TResult>(
+  fn: MaybeRef<(elem: T, acc: TResult) => TResult>,
+  acc: MaybeRef<TResult>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<TResult>;
 
 
 /**
@@ -5019,10 +5104,11 @@ export function useReduceRight<T, TResult>(
  */
 export function useReduceWhile<T, TResult>(
   predicate: MaybeRef<(acc: TResult, elem: T) => boolean>,
+): _.F.Curry<(a: MaybeRef<(acc: TResult, elem: T) => TResult>, b: MaybeRef<TResult>, c: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>>;
+export function useReduceWhile<T, TResult>(
+  predicate: MaybeRef<(acc: TResult, elem: T) => boolean>,
   fn: MaybeRef<(acc: TResult, elem: T) => TResult>,
-  acc: MaybeRef<TResult>,
-  list: MaybeWatchSource<readonly T[]>,
-): ComputedRef<TResult>;
+): _.F.Curry<(a: MaybeRef<TResult>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>>;
 export function useReduceWhile<T, TResult>(
   predicate: MaybeRef<(acc: TResult, elem: T) => boolean>,
   fn: MaybeRef<(acc: TResult, elem: T) => TResult>,
@@ -5031,10 +5117,9 @@ export function useReduceWhile<T, TResult>(
 export function useReduceWhile<T, TResult>(
   predicate: MaybeRef<(acc: TResult, elem: T) => boolean>,
   fn: MaybeRef<(acc: TResult, elem: T) => TResult>,
-): _.F.Curry<(a: MaybeRef<TResult>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>>;
-export function useReduceWhile<T, TResult>(
-  predicate: MaybeRef<(acc: TResult, elem: T) => boolean>,
-): _.F.Curry<(a: MaybeRef<(acc: TResult, elem: T) => TResult>, b: MaybeRef<TResult>, c: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult>>;
+  acc: MaybeRef<TResult>,
+  list: MaybeWatchSource<readonly T[]>,
+): ComputedRef<TResult>;
 
 
 /**
@@ -5088,12 +5173,12 @@ export function useReject<T, C extends readonly T[] | Record<string, T>>(pred: M
  * R.remove(2, 3, [1,2,3,4,5,6,7,8]); //=> [1,2,6,7,8]
  * ```
  */
-export function useRemove<T>(start: MaybeWatchSource<number>, count: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useRemove<T>(start: MaybeWatchSource<number>): {
   (count: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
   (count: MaybeWatchSource<number>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 };
 export function useRemove<T>(start: MaybeWatchSource<number>, count: MaybeWatchSource<number>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useRemove<T>(start: MaybeWatchSource<number>, count: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5110,8 +5195,8 @@ export function useRemove<T>(start: MaybeWatchSource<number>, count: MaybeWatchS
  * repeatedObjs[0] === repeatedObjs[1]; //=> true
  * ```
  */
-export function useRepeat<T>(a: MaybeRef<T>, n: MaybeWatchSource<number>): ComputedRef<T[]>;
 export function useRepeat<T>(a: MaybeRef<T>): (n: MaybeWatchSource<number>) => ComputedRef<T[]>;
+export function useRepeat<T>(a: MaybeRef<T>, n: MaybeWatchSource<number>): ComputedRef<T[]>;
 
 
 /**
@@ -5132,16 +5217,16 @@ export function useRepeat<T>(a: MaybeRef<T>): (n: MaybeWatchSource<number>) => C
  */
 export function useReplace(
   pattern: MaybeWatchSource<RegExp | string>,
-  replacement: MaybeWatchSource<string | ((match: string, ...args: readonly any[]) => string)>,
-  str: MaybeWatchSource<string>,
-): ComputedRef<string>;
+): (replacement: MaybeWatchSource<string | ((match: string, ...args: readonly any[]) => string)>) => (str: MaybeWatchSource<string>) => ComputedRef<string>;
 export function useReplace(
   pattern: MaybeWatchSource<RegExp | string>,
   replacement: MaybeWatchSource<string | ((match: string, ...args: readonly any[]) => string)>,
 ): (str: MaybeWatchSource<string>) => ComputedRef<string>;
 export function useReplace(
   pattern: MaybeWatchSource<RegExp | string>,
-): (replacement: MaybeWatchSource<string | ((match: string, ...args: readonly any[]) => string)>) => (str: MaybeWatchSource<string>) => ComputedRef<string>;
+  replacement: MaybeWatchSource<string | ((match: string, ...args: readonly any[]) => string)>,
+  str: MaybeWatchSource<string>,
+): ComputedRef<string>;
 
 
 /**
@@ -5179,9 +5264,12 @@ export function useReverse(str: MaybeWatchSource<string>): ComputedRef<string>;
  * const factorials = R.scan(R.multiply, 1, numbers); //=> [1, 1, 2, 6, 24]
  * ```
  */
-export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>, acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>): ComputedRef<TResult[]>;
+export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>): {
+  (acc: MaybeRef<TResult>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult[]>
+  (acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>): ComputedRef<TResult[]>
+};
 export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>, acc: MaybeRef<TResult>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult[]>;
-export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>): (acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>) => ComputedRef<TResult[]>;
+export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>, acc: MaybeRef<TResult>, list: MaybeWatchSource<readonly T[]>): ComputedRef<TResult[]>;
 
 
 /**
@@ -5198,9 +5286,12 @@ export function useScan<T, TResult>(fn: MaybeRef<(acc: TResult, elem: T) => any>
  * R.set(xLens, 8, {x: 1, y: 2});  //=> {x: 8, y: 2}
  * ```
  */
-export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>, a: MaybeRef<A>, obj: MaybeRef<S>): ComputedRef<S>;
+export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>): {
+  (a: MaybeRef<A>): (obj: MaybeRef<S>) => ComputedRef<S>
+  (a: MaybeRef<A>, obj: MaybeRef<S>): ComputedRef<S>
+};
 export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>, a: MaybeRef<A>): (obj: MaybeRef<S>) => ComputedRef<S>;
-export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>): (a: MaybeRef<A>, obj: MaybeRef<S>) => ComputedRef<S>;
+export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>, a: MaybeRef<A>, obj: MaybeRef<S>): ComputedRef<S>;
 
 
 /**
@@ -5218,8 +5309,10 @@ export function useSet<S, A>(lens: MaybeWatchSource<Lens<S, A>>): (a: MaybeRef<A
  * R.slice(0, 3, 'ramda');                     //=> 'ram'
  * ```
  */
-export function useSlice(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
-export function useSlice<T>(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
+export function useSlice(a: MaybeWatchSource<number>): {
+  <T>(b: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
+  (b: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
+};
 export function useSlice(
   a: MaybeWatchSource<number>,
   b: MaybeWatchSource<number>,
@@ -5227,10 +5320,8 @@ export function useSlice(
   <T>(list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
   (list: MaybeRef<string>): ComputedRef<string>;
 };
-export function useSlice(a: MaybeWatchSource<number>): {
-  <T>(b: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
-  (b: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
-};
+export function useSlice(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>, list: MaybeRef<string>): ComputedRef<string>;
+export function useSlice<T>(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>, list: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5248,8 +5339,8 @@ export function useSlice(a: MaybeWatchSource<number>): {
  * R.sort(diff, [4,2,7,5]); //=> [2, 4, 5, 7]
  * ```
  */
-export function useSort<T>(fn: MaybeRef<(a: T, b: T) => number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useSort<T>(fn: MaybeRef<(a: T, b: T) => number>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useSort<T>(fn: MaybeRef<(a: T, b: T) => number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5278,9 +5369,9 @@ export function useSort<T>(fn: MaybeRef<(a: T, b: T) => number>): (list: MaybeWa
  * sortByNameCaseInsensitive(people); //=> [alice, bob, clara]
  * ```
  */
-export function useSortBy<T>(fn: MaybeRef<(a: T) => Ord>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useSortBy<T>(fn: MaybeRef<(a: T) => Ord>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
 export function useSortBy(fn: MaybeRef<(a: any) => Ord>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useSortBy<T>(fn: MaybeRef<(a: T) => Ord>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5310,8 +5401,8 @@ export function useSortBy(fn: MaybeRef<(a: any) => Ord>): <T>(list: MaybeWatchSo
  * ageNameSort(people); //=> [alice, clara, bob]
  * ```
  */
-export function useSortWith<T>(fns: MaybeWatchSource<Array<(a: T, b: T) => number>>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useSortWith<T>(fns: MaybeWatchSource<Array<(a: T, b: T) => number>>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useSortWith<T>(fns: MaybeWatchSource<Array<(a: T, b: T) => number>>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5342,12 +5433,12 @@ export function useSplit(sep: MaybeWatchSource<string | RegExp>, str: MaybeWatch
  * R.splitAt(-1, 'foobar');          //=> ['fooba', 'r']
  * ```
  */
-export function useSplitAt<T>(index: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
-export function useSplitAt(index: MaybeWatchSource<number>, list: MaybeWatchSource<string>): ComputedRef<[string, string]>;
 export function useSplitAt(index: MaybeWatchSource<number>): {
   <T>(list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
   (list: MaybeWatchSource<string>): ComputedRef<[string, string]>;
 };
+export function useSplitAt<T>(index: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
+export function useSplitAt(index: MaybeWatchSource<number>, list: MaybeWatchSource<string>): ComputedRef<[string, string]>;
 
 
 /**
@@ -5359,12 +5450,12 @@ export function useSplitAt(index: MaybeWatchSource<number>): {
  * R.splitEvery(3, 'foobarbaz'); //=> ['foo', 'bar', 'baz']
  * ```
  */
-export function useSplitEvery<T>(a: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
-export function useSplitEvery(a: MaybeWatchSource<number>, list: MaybeWatchSource<string>): ComputedRef<string[]>;
 export function useSplitEvery(a: MaybeWatchSource<number>): {
   (list: MaybeWatchSource<string>): ComputedRef<string[]>;
   <T>(list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
 };
+export function useSplitEvery(a: MaybeWatchSource<number>, list: MaybeWatchSource<string>): ComputedRef<string[]>;
+export function useSplitEvery<T>(a: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[][]>;
 
 
 /**
@@ -5379,8 +5470,8 @@ export function useSplitEvery(a: MaybeWatchSource<number>): {
  * R.splitWhen(R.equals(2), [1, 2, 3, 1, 2, 3]);   //=> [[1], [2, 3, 1, 2, 3]]
  * ```
  */
-export function useSplitWhen<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
 export function useSplitWhen<T>(pred: MaybeRef<(val: T) => boolean>): <U extends T>(list: MaybeWatchSource<readonly U[]>) => ComputedRef<[U[], U[]]>;
+export function useSplitWhen<T>(pred: MaybeRef<(val: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<[T[], T[]]>;
 
 
 /**
@@ -5391,8 +5482,8 @@ export function useSplitWhen<T>(pred: MaybeRef<(val: T) => boolean>): <U extends
  * R.splitWhenever(R.equals(2), [1, 2, 3, 2, 4, 5, 2, 6, 7]); //=> [[1], [3], [4, 5], [6, 7]]
  * ```
  */
-export function useSplitWhenever<T>(pred: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<T[]>): ComputedRef<T[][]>;
 export function useSplitWhenever<T>(pred: MaybeRef<(a: T) => boolean>): <U extends T>(list: MaybeWatchSource<U[]>) => ComputedRef<U[][]>;
+export function useSplitWhenever<T>(pred: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<T[]>): ComputedRef<T[][]>;
 
 
 /**
@@ -5410,10 +5501,10 @@ export function useSplitWhenever<T>(pred: MaybeRef<(a: T) => boolean>): <U exten
  * R.startsWith(['b'], ['a', 'b', 'c'])    //=> false
  * ```
  */
-export function useStartsWith(substr: MaybeRef<string>, str: MaybeRef<string>): ComputedRef<boolean>;
+export function useStartsWith<T>(subList: MaybeRef<readonly T[]>): (list: MaybeRef<readonly T[]>) => ComputedRef<boolean>;
 export function useStartsWith(substr: MaybeRef<string>): (str: MaybeRef<string>) => ComputedRef<boolean>;
 export function useStartsWith<T>(subList: MaybeRef<readonly T[]>, list: MaybeRef<readonly T[]>): ComputedRef<boolean>;
-export function useStartsWith<T>(subList: MaybeRef<readonly T[]>): (list: MaybeRef<readonly T[]>) => ComputedRef<boolean>;
+export function useStartsWith(substr: MaybeRef<string>, str: MaybeRef<string>): ComputedRef<boolean>;
 
 
 /**
@@ -5433,10 +5524,9 @@ export function useStartsWith<T>(subList: MaybeRef<readonly T[]>): (list: MaybeR
  * complementaryAngle(72); //=> 18
  * ```
  */
-export function useSubtract(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useSubtract(__: Placeholder): (b: MaybeWatchSource<number>, a: MaybeWatchSource<number>) => ComputedRef<number>;
-export function useSubtract(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 export function useSubtract(a: MaybeWatchSource<number>): (b: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useSubtract(__: Placeholder, b: MaybeWatchSource<number>): (a: MaybeWatchSource<number>) => ComputedRef<number>;
+export function useSubtract(a: MaybeWatchSource<number>, b: MaybeWatchSource<number>): ComputedRef<number>;
 
 
 /**
@@ -5453,6 +5543,75 @@ export function useSum(list: MaybeWatchSource<readonly number[]>): ComputedRef<n
 
 
 /**
+ * Swap an item, at index `indexA` with another item, at index `indexB`, in an object or a list of elements.
+ * A new result will be created containing the new elements order.
+ *
+ * @example
+ * ```typescript
+ * R.swap(0, 2, ['a', 'b', 'c', 'd', 'e', 'f']); //=> ['c', 'b', 'a', 'd', 'e', 'f']
+ * R.swap(-1, 0, ['a', 'b', 'c', 'd', 'e', 'f']); //=> ['f', 'b', 'c', 'd', 'e', 'a'] list rotation
+ * R.swap('a', 'b', {a: 1, b: 2}); //=> {a: 2, b: 2}
+ * R.swap(0, 2, 'foo'); //=> 'oof'
+ * ```
+ */
+export function useSwap(indexA: MaybeWatchSource<number>): {
+  // swap(indexA)(indexB)(list)
+  (indexB: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+  // swap(indexA)(__, list)(indexB)
+  <T>(__: Placeholder, list: MaybeWatchSource<readonly T[]>): (indexB: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // swap(indexA)(indexB, list)
+  <T>(indexB: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+};
+
+// swap(__, indexB)
+export function useSwap(
+  __: Placeholder,
+  indexB: MaybeWatchSource<number>
+): {
+  // swap(__, indexB)(indexA)(list)
+  (indexA: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+  // swap(__, indexB)(__, list)(indexA)
+  <T>(__2: Placeholder, list: MaybeWatchSource<readonly T[]>): (indexA: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // swap(__, indexB)(indexA, list)
+  <T>(indexA: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+};
+
+// swap(indexA, indexB)(list)
+export function useSwap(indexA: MaybeWatchSource<number>, indexB: MaybeWatchSource<number>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+
+// swap(__, __, list)
+export function useSwap<T>(
+  __: Placeholder,
+  __2: Placeholder,
+  list: MaybeWatchSource<readonly T[]>
+): {
+  // swap(__, __, list)(indexA)(indexB)
+  (indexA: MaybeWatchSource<number>): (indexB: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // swap(__, __, list)(__, indexB)(indexA)
+  (__3: Placeholder, indexB: MaybeWatchSource<number>): (indexA: MaybeWatchSource<number>) => ComputedRef<T[]>;
+  // swap(__, __, list)(indexA, indexB)
+  (indexA: MaybeWatchSource<number>, indexB: MaybeWatchSource<number>): ComputedRef<T[]>;
+};
+
+// swap(indexA, __, list)(indexB)
+export function useSwap<T>(
+  indexA: MaybeWatchSource<number>,
+  __: Placeholder,
+  list: MaybeWatchSource<readonly T[]>
+): (indexB: MaybeWatchSource<number>) => ComputedRef<T[]>;
+
+// swap(__, indexB, list)(indexA)
+export function useSwap<T>(
+  __: Placeholder,
+  indexB: MaybeWatchSource<number>,
+  list: MaybeWatchSource<readonly T[]>
+): (indexA: MaybeWatchSource<number>) => ComputedRef<T[]>;
+
+// swap(indexA, indexB, list)
+export function useSwap<T>(indexA: MaybeWatchSource<number>, indexB: MaybeWatchSource<number>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+
+
+/**
  * Finds the set (i.e. no duplicates) of all elements contained in the first or
  * second list, but not both.
  *
@@ -5464,8 +5623,8 @@ export function useSum(list: MaybeWatchSource<readonly number[]>): ComputedRef<n
  * R.symmetricDifference([7,6,5,4,3], [1,2,3,4]); //=> [7,6,5,1,2]
  * ```
  */
-export function useSymmetricDifference<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useSymmetricDifference<T>(list: MaybeWatchSource<readonly T[]>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useSymmetricDifference<T>(list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5485,12 +5644,13 @@ export function useSymmetricDifference<T>(list: MaybeWatchSource<readonly T[]>):
  */
 export function useSymmetricDifferenceWith<T>(
   pred: MaybeRef<(a: T, b: T) => boolean>,
+): _.F.Curry<(a: MaybeWatchSource<readonly T[]>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>>;
+
+export function useSymmetricDifferenceWith<T>(
+  pred: MaybeRef<(a: T, b: T) => boolean>,
   list1: MaybeWatchSource<readonly T[]>,
   list2: MaybeWatchSource<readonly T[]>,
 ): ComputedRef<T[]>;
-export function useSymmetricDifferenceWith<T>(
-  pred: MaybeRef<(a: T, b: T) => boolean>,
-): _.F.Curry<(a: MaybeWatchSource<readonly T[]>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>>;
 
 
 /**
@@ -5557,13 +5717,12 @@ export function useTail<T extends readonly [...any]>(tuple: MaybeRef<T>): Comput
  * //=> ['Dave Brubeck', 'Paul Desmond', 'Eugene Wright', 'Joe Morello', 'Gerry Mulligan']
  * ```
  */
-export function useTake<T>(n: MaybeWatchSource<number>, xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
-export function useTake(n: MaybeWatchSource<number>, xs: MaybeRef<string>): ComputedRef<string>;
 export function useTake(n: MaybeWatchSource<number>): {
   (xs: MaybeRef<string>): ComputedRef<string>;
   <T>(xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
 };
-export function useTake<T>(n: MaybeWatchSource<number>): (xs: MaybeRef<readonly T[]>) => ComputedRef<T[]>;
+export function useTake<T>(n: MaybeWatchSource<number>, xs: MaybeRef<readonly T[]>): ComputedRef<T[]>;
+export function useTake(n: MaybeWatchSource<number>, xs: MaybeRef<string>): ComputedRef<string>;
 
 
 /**
@@ -5581,12 +5740,13 @@ export function useTake<T>(n: MaybeWatchSource<number>): (xs: MaybeRef<readonly 
  * R.takeLast(3, 'ramda');               //=> 'mda'
  * ```
  */
-export function useTakeLast<T>(n: MaybeWatchSource<number>, xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-export function useTakeLast(n: MaybeWatchSource<number>, xs: MaybeWatchSource<string>): ComputedRef<string>;
 export function useTakeLast(n: MaybeWatchSource<number>): {
   (xs: MaybeWatchSource<string>): ComputedRef<string>;
   <T>(xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 };
+export function useTakeLast<T>(n: MaybeWatchSource<number>, xs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+export function useTakeLast(n: MaybeWatchSource<number>, xs: MaybeWatchSource<string>): ComputedRef<string>;
+
 
 
 /**
@@ -5607,8 +5767,8 @@ export function useTakeLast(n: MaybeWatchSource<number>): {
  * R.takeLastWhile(x => x !== 'R' , 'Ramda'); //=> 'amda'
  * ```
  */
-export function useTakeLastWhile<T>(pred: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useTakeLastWhile<T>(pred: MaybeRef<(a: T) => boolean>): <T>(list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useTakeLastWhile<T>(pred: MaybeRef<(a: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5633,8 +5793,8 @@ export function useTakeLastWhile<T>(pred: MaybeRef<(a: T) => boolean>): <T>(list
  * R.takeWhile(x => x !== 'd' , 'Ramda'); //=> 'Ram'
  * ```
  */
-export function useTakeWhile<T>(fn: MaybeRef<(x: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useTakeWhile<T>(fn: MaybeRef<(x: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useTakeWhile<T>(fn: MaybeRef<(x: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -5649,10 +5809,10 @@ export function useTakeWhile<T>(fn: MaybeRef<(x: T) => boolean>): (list: MaybeWa
  * // logs 'x is 100'
  * ```
  */
-export function useTap<T, R extends T = T>(fn: MaybeRef<(a: T) => asserts a is R>, value: MaybeRef<T>): ComputedRef<R>;
 export function useTap<T, R extends T = T>(fn: MaybeRef<(a: T) => asserts a is R>): (value: MaybeRef<T>) => ComputedRef<R>;
-export function useTap<T>(fn: MaybeRef<(a: T) => void>, value: MaybeRef<T>): ComputedRef<T>;
 export function useTap<T>(fn: MaybeRef<(a: T) => void>): (value: MaybeRef<T>) => ComputedRef<T>;
+export function useTap<T, R extends T = T>(fn: MaybeRef<(a: T) => asserts a is R>, value: MaybeRef<T>): ComputedRef<R>;
+export function useTap<T>(fn: MaybeRef<(a: T) => void>, value: MaybeRef<T>): ComputedRef<T>;
 
 
 /**
@@ -5666,8 +5826,8 @@ export function useTap<T>(fn: MaybeRef<(a: T) => void>): (value: MaybeRef<T>) =>
  * R.test(/^y/, 'xyz'); //=> false
  * ```
  */
-export function useTest(regexp: MaybeWatchSource<RegExp>, str: MaybeWatchSource<string>): ComputedRef<boolean>;
 export function useTest(regexp: MaybeWatchSource<RegExp>): (str: MaybeWatchSource<string>) => ComputedRef<boolean>;
+export function useTest(regexp: MaybeWatchSource<RegExp>, str: MaybeWatchSource<string>): ComputedRef<boolean>;
 
 
 /**
@@ -5701,8 +5861,8 @@ export function useThunkify<F extends (...args: readonly any[]) => any>(
  * R.times(R.identity, 5); //=> [0, 1, 2, 3, 4]
  * ```
  */
-export function useTimes<T>(fn: MaybeRef<(i: number) => T>, n: MaybeWatchSource<number>): ComputedRef<T[]>;
 export function useTimes<T>(fn: MaybeRef<(i: number) => T>): (n: MaybeWatchSource<number>) => ComputedRef<T[]>;
+export function useTimes<T>(fn: MaybeRef<(i: number) => T>, n: MaybeWatchSource<number>): ComputedRef<T[]>;
 
 
 /**
@@ -5801,7 +5961,7 @@ export function useToString(val: MaybeRef<unknown>): ComputedRef<string>;
  * R.toUpper('abc'); //=> 'ABC'
  * ```
  */
-export function useToUpper<S extends string>(str: MaybeWatchSource<S>): ComputedRef<Uppercase<S>>;
+export function useToUpper<S extends string = string>(str: MaybeWatchSource<S>): ComputedRef<Uppercase<S>>;
 export function useToUpper(str: MaybeWatchSource<string>): ComputedRef<string>;
 
 
@@ -5903,9 +6063,12 @@ export function useTranspose<T>(list: MaybeWatchSource<readonly T[][]>): Compute
  * R.traverse(Maybe, safeDiv(10), Left("X")); //=> Just(Left("X"))
  * ```
  */
-export function useTraverse<A, B>(of: MaybeRef<(a: B) => B[]>, fn: MaybeRef<(t: A) => B[]>, list: MaybeRef<readonly A[]>): ComputedRef<B[][]>;
+export function useTraverse<A, B>(of: MaybeRef<(a: B) => B[]>): {
+  (fn: MaybeRef<(t: A) => B[]>): (list: MaybeRef<readonly A[]>) => ComputedRef<B[][]>
+  (fn: MaybeRef<(t: A) => B[]>, list: MaybeRef<readonly A[]>): ComputedRef<B[][]>
+};
 export function useTraverse<A, B>(of: MaybeRef<(a: B) => B[]>, fn: MaybeRef<(t: A) => B[]>): (list: MaybeRef<readonly A[]>) => ComputedRef<B[][]>;
-export function useTraverse<A, B>(of: MaybeRef<(a: B) => B[]>): (fn: MaybeRef<(t: A) => B[]>, list: MaybeRef<readonly A[]>) => ComputedRef<B[][]>;
+export function useTraverse<A, B>(of: MaybeRef<(a: B) => B[]>, fn: MaybeRef<(t: A) => B[]>, list: MaybeRef<readonly A[]>): ComputedRef<B[][]>;
 
 
 /**
@@ -5937,13 +6100,13 @@ export function useTrim(str: MaybeWatchSource<string>): ComputedRef<string>;
  * R.tryCatch(() => { throw 'this is not a valid value'}, (err, value)=>({error : err,  value }))('bar') // => {'error': 'this is not a valid value', 'value': 'bar'}
  * ```
  */
+export function useTryCatch<F extends (...args: readonly any[]) => any>(
+  tryer: MaybeRef<F>,
+): <RE = ReturnType<F>, E = unknown>(catcher: MaybeRef<(error: E, ...args: _.F.Parameters<F>) => RE>) => ComputedRef<F | (() => RE)>;
 export function useTryCatch<F extends (...args: readonly any[]) => any, RE = ReturnType<F>, E = unknown>(
   tryer: MaybeRef<F>,
   catcher: MaybeRef<(error: E, ...args: _.F.Parameters<F>) => RE>,
 ): ComputedRef<F | (() => RE)>;
-export function useTryCatch<F extends (...args: readonly any[]) => any>(
-  tryer: MaybeRef<F>,
-): <RE = ReturnType<F>, E = unknown>(catcher: MaybeRef<(error: E, ...args: _.F.Parameters<F>) => RE>) => ComputedRef<F | (() => RE)>;
 
 
 /**
@@ -6042,8 +6205,8 @@ export function useUnary<T, R>(fn: MaybeRef<(a: T, ...args: readonly any[]) => R
  * uncurriedAddFour(1, 2, 3, 4); //=> 10
  * ```
  */
-export function useUncurryN<T>(len: MaybeWatchSource<number>, fn: MaybeRef<(a: any) => any>): ComputedRef<(...args: unknown[]) => T>;
 export function useUncurryN<T>(len: MaybeWatchSource<number>): (fn: MaybeRef<(a: any) => any>) => ComputedRef<(...args: unknown[]) => T>;
+export function useUncurryN<T>(len: MaybeWatchSource<number>, fn: MaybeRef<(a: any) => any>): ComputedRef<(...args: unknown[]) => T>;
 
 
 /**
@@ -6060,8 +6223,8 @@ export function useUncurryN<T>(len: MaybeWatchSource<number>): (fn: MaybeRef<(a:
  * R.unfold(f, 10); //=> [-10, -20, -30, -40, -50]
  * ```
  */
-export function useUnfold<T, TResult>(fn: MaybeRef<(seed: T) => [TResult, T] | false>, seed: MaybeRef<T>): ComputedRef<TResult[]>;
 export function useUnfold<T, TResult>(fn: MaybeRef<(seed: T) => [TResult, T] | false>): (seed: MaybeRef<T>) => ComputedRef<TResult[]>;
+export function useUnfold<T, TResult>(fn: MaybeRef<(seed: T) => [TResult, T] | false>, seed: MaybeRef<T>): ComputedRef<TResult[]>;
 
 
 /**
@@ -6073,8 +6236,8 @@ export function useUnfold<T, TResult>(fn: MaybeRef<(seed: T) => [TResult, T] | f
  * R.union([1, 2, 3], [2, 3, 4]); //=> [1, 2, 3, 4]
  * ```
  */
-export function useUnion<T>(as: MaybeWatchSource<readonly T[]>, bs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useUnion<T>(as: MaybeWatchSource<readonly T[]>): (bs: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useUnion<T>(as: MaybeWatchSource<readonly T[]>, bs: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -6092,8 +6255,8 @@ export function useUnion<T>(as: MaybeWatchSource<readonly T[]>): (bs: MaybeWatch
  * R.unionWith(R.eqBy(R.prop('a')), l1, l2); //=> [{a: 1}, {a: 2}, {a: 4}]
  * ```
  */
-export function useUnionWith<T>(pred: MaybeRef<(a: T, b: T) => boolean>, list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useUnionWith<T>(pred: MaybeRef<(a: T, b: T) => boolean>): _.F.Curry<(a: MaybeWatchSource<readonly T[]>, b: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>>;
+export function useUnionWith<T>(pred: MaybeRef<(a: T, b: T) => boolean>, list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -6123,8 +6286,8 @@ export function useUniq<T>(list: MaybeWatchSource<readonly T[]>): ComputedRef<T[
  * R.uniqBy(Math.abs, [-1, -5, 2, 10, 1, 2]); //=> [-1, -5, 2, 10]
  * ```
  */
-export function useUniqBy<T, U>(fn: MaybeRef<(a: T) => U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useUniqBy<T, U>(fn: MaybeRef<(a: T) => U>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useUniqBy<T, U>(fn: MaybeRef<(a: T) => U>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -6144,9 +6307,9 @@ export function useUniqBy<T, U>(fn: MaybeRef<(a: T) => U>): (list: MaybeWatchSou
  * R.uniqWith(strEq)(['1', 1, 1]);    //=> ['1']
  * ```
  */
-export function useUniqWith<T, U>(pred: MaybeRef<(x: T, y: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function useUniqWith<T, U>(pred: MaybeRef<(x: T, y: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useUniqWith<T>(pred: MaybeRef<(x: T, y: T) => boolean>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useUniqWith<T>(pred: MaybeRef<(x: T, y: T) => boolean>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
+
 
 
 /**
@@ -6164,8 +6327,8 @@ export function useUniqWith<T, U>(pred: MaybeRef<(x: T, y: T) => boolean>): (lis
  * safeInc(1); //=> 2
  * ```
  */
-export function useUnless<T, U>(pred: MaybeRef<(a: T) => boolean>, whenFalseFn: MaybeRef<(a: T) => U>, a: MaybeRef<T>): ComputedRef<T | U>;
 export function useUnless<T, U>(pred: MaybeRef<(a: T) => boolean>, whenFalseFn: MaybeRef<(a: T) => U>): (a: MaybeRef<T>) => ComputedRef<T | U>;
+export function useUnless<T, U>(pred: MaybeRef<(a: T) => boolean>, whenFalseFn: MaybeRef<(a: T) => U>, a: MaybeRef<T>): ComputedRef<T | U>;
 
 
 /**
@@ -6194,8 +6357,8 @@ export function useUnnest<T extends readonly any[]>(list: MaybeRef<T>): Computed
  * R.until(R.gt(R.__, 100), R.multiply(2))(1) // => 128
  * ```
  */
-export function useUntil<T, U>(pred: MaybeRef<(val: T) => boolean>, fn: MaybeRef<(val: T) => U>, init: MaybeRef<U>): ComputedRef<U>;
 export function useUntil<T, U>(pred: MaybeRef<(val: T) => boolean>, fn: MaybeRef<(val: T) => U>): (init: MaybeRef<U>) => ComputedRef<U>;
+export function useUntil<T, U>(pred: MaybeRef<(val: T) => boolean>, fn: MaybeRef<(val: T) => U>, init: MaybeRef<U>): ComputedRef<U>;
 
 
 /**
@@ -6210,8 +6373,8 @@ export function useUntil<T, U>(pred: MaybeRef<(val: T) => boolean>, fn: MaybeRef
  * R.update(-1, '_', ['a', 'b', 'c']);     //=> ['a', 'b', '_']
  * ```
  */
-export function useUpdate<T>(index: MaybeWatchSource<number>, value: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useUpdate<T>(index: MaybeWatchSource<number>, value: MaybeRef<T>): (list: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useUpdate<T>(index: MaybeWatchSource<number>, value: MaybeRef<T>, list: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -6389,10 +6552,10 @@ export function useView<S, A>(lens: MaybeWatchSource<Lens<S, A>>, obj: MaybeRef<
  * truncate('0123456789ABC'); //=> '0123456789…'
  * ```
  */
-export function useWhen<T, U extends T, V>(pred: MaybeRef<(a: T) => a is U>, whenTrueFn: MaybeRef<(a: U) => V>, a: MaybeRef<T>): ComputedRef<T | V>;
-export function useWhen<T, U>(pred: MaybeRef<(a: T) => boolean>, whenTrueFn: MaybeRef<(a: T) => U>, a: MaybeRef<T>): ComputedRef<T | U>;
 export function useWhen<T, U extends T, V>(pred: MaybeRef<(a: T) => a is U>, whenTrueFn: MaybeRef<(a: U) => V>): (a: MaybeRef<T>) => ComputedRef<T | V>;
 export function useWhen<T, U>(pred: MaybeRef<(a: T) => boolean>, whenTrueFn: MaybeRef<(a: T) => U>): (a: MaybeRef<T>) => ComputedRef<T | U>;
+export function useWhen<T, U extends T, V>(pred: MaybeRef<(a: T) => a is U>, whenTrueFn: MaybeRef<(a: U) => V>, a: MaybeRef<T>): ComputedRef<T | V>;
+export function useWhen<T, U>(pred: MaybeRef<(a: T) => boolean>, whenTrueFn: MaybeRef<(a: T) => U>, a: MaybeRef<T>): ComputedRef<T | U>;
 
 
 /**
@@ -6424,10 +6587,8 @@ export function useWhen<T, U>(pred: MaybeRef<(a: T) => boolean>, whenTrueFn: May
  * pred({a: 'foo', b: 'xxx', x: 11, y: 20}); //=> false
  * ```
  */
-export function useWhere<T, U>(spec: MaybeWatchSource<T>, testObj: MaybeWatchSource<U>): ComputedRef<boolean>;
 export function useWhere<T>(spec: MaybeWatchSource<T>): <U>(testObj: MaybeWatchSource<U>) => ComputedRef<boolean>;
-export function useWhere<ObjFunc2, U>(spec: MaybeWatchSource<ObjFunc2>, testObj: MaybeWatchSource<U>): ComputedRef<boolean>;
-export function useWhere<ObjFunc2>(spec: MaybeWatchSource<ObjFunc2>): <U>(testObj: MaybeWatchSource<U>) => ComputedRef<boolean>;
+export function useWhere<T, U>(spec: MaybeWatchSource<T>, testObj: MaybeWatchSource<U>): ComputedRef<boolean>;
 
 
 /**
@@ -6458,9 +6619,9 @@ export function useWhere<ObjFunc2>(spec: MaybeWatchSource<ObjFunc2>): <U>(testOb
  * pred({a: 'foo', b: 'xxx', x: 11, y: 20}); //=> true
  * ```
  */
-export function useWhereAny<Spec extends Partial<Record<keyof U, (value: any) => boolean>>, U>(spec: MaybeWatchSource<Spec>, testObj: MaybeWatchSource<U>): ComputedRef<boolean>;
-export function useWhereAny<U>(__: Placeholder, testObj: MaybeWatchSource<U>): <Spec extends Partial<Record<keyof U, (value: any) => boolean>>>(spec: MaybeWatchSource<Spec>) => ComputedRef<boolean>;
 export function useWhereAny<Spec extends Record<PropertyKey, (value: any) => boolean>>(spec: MaybeWatchSource<Spec>): <U extends Record<keyof Spec, any>>(testObj: MaybeWatchSource<U>) => ComputedRef<boolean>;
+export function useWhereAny<U>(__: Placeholder, testObj: MaybeWatchSource<U>): <Spec extends Partial<Record<keyof U, (value: any) => boolean>>>(spec: MaybeWatchSource<Spec>) => ComputedRef<boolean>;
+export function useWhereAny<Spec extends Partial<Record<keyof U, (value: any) => boolean>>, U>(spec: MaybeWatchSource<Spec>, testObj: MaybeWatchSource<U>): ComputedRef<boolean>;
 
 
 /**
@@ -6485,8 +6646,8 @@ export function useWhereAny<Spec extends Record<PropertyKey, (value: any) => boo
  * pred({a: 1, b: 1});        //=> false
  * ```
  */
-export function useWhereEq<T, U>(spec: MaybeWatchSource<T>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
 export function useWhereEq<T>(spec: MaybeWatchSource<T>): <U>(obj: MaybeWatchSource<U>) => ComputedRef<boolean>;
+export function useWhereEq<T, U>(spec: MaybeWatchSource<T>, obj: MaybeWatchSource<U>): ComputedRef<boolean>;
 
 
 /**
@@ -6502,8 +6663,8 @@ export function useWhereEq<T>(spec: MaybeWatchSource<T>): <U>(obj: MaybeWatchSou
  * R.without([1, 2], [1, 2, 1, 3, 4]); //=> [3, 4]
  * ```
  */
-export function useWithout<T>(list1: MaybeWatchSource<readonly unknown[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 export function useWithout<T>(list1: MaybeWatchSource<readonly T[] | readonly unknown[]>): (list2: MaybeWatchSource<readonly T[]>) => ComputedRef<T[]>;
+export function useWithout<T>(list1: MaybeWatchSource<readonly unknown[]>, list2: MaybeWatchSource<readonly T[]>): ComputedRef<T[]>;
 
 
 /**
@@ -6534,8 +6695,8 @@ export function useXor(a: MaybeRef<any>): (b: MaybeRef<any>) => ComputedRef<bool
  * R.xprod([1, 2], ['a', 'b']); //=> [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
  * ```
  */
-export function useXprod<K, V>(as: MaybeWatchSource<readonly K[]>, bs: MaybeWatchSource<readonly V[]>): ComputedRef<Array<KeyValuePair<K, V>>>;
 export function useXprod<K>(as: MaybeWatchSource<readonly K[]>): <V>(bs: MaybeWatchSource<readonly V[]>) => ComputedRef<Array<KeyValuePair<K, V>>>;
+export function useXprod<K, V>(as: MaybeWatchSource<readonly K[]>, bs: MaybeWatchSource<readonly V[]>): ComputedRef<Array<KeyValuePair<K, V>>>;
 
 
 /**
@@ -6549,8 +6710,8 @@ export function useXprod<K>(as: MaybeWatchSource<readonly K[]>): <V>(bs: MaybeWa
  * R.zip([1, 2, 3], ['a', 'b', 'c']); //=> [[1, 'a'], [2, 'b'], [3, 'c']]
  * ```
  */
-export function useZip<K, V>(list1: MaybeWatchSource<readonly K[]>, list2: MaybeWatchSource<readonly V[]>): ComputedRef<Array<KeyValuePair<K, V>>>;
 export function useZip<K>(list1: MaybeWatchSource<readonly K[]>): <V>(list2: MaybeWatchSource<readonly V[]>) => ComputedRef<Array<KeyValuePair<K, V>>>;
+export function useZip<K, V>(list1: MaybeWatchSource<readonly K[]>, list2: MaybeWatchSource<readonly V[]>): ComputedRef<Array<KeyValuePair<K, V>>>;
 
 
 /**
@@ -6563,10 +6724,9 @@ export function useZip<K>(list1: MaybeWatchSource<readonly K[]>): <V>(list2: May
  * R.zipObj(['a', 'b', 'c'], [1, 2, 3]); //=> {a: 1, b: 2, c: 3}
  * ```
  */
-export function useZipObj<T, K extends string>(keys: MaybeWatchSource<readonly K[]>, values: MaybeWatchSource<readonly T[]>): ComputedRef<{ [P in K]: T }>;
-export function useZipObj<K extends string>(keys: MaybeWatchSource<readonly K[]>): <T>(values: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [P in K]: T }>;
-export function useZipObj<T, K extends number>(keys: MaybeWatchSource<readonly K[]>, values: MaybeWatchSource<readonly T[]>): ComputedRef<{ [P in K]: T }>;
-export function useZipObj<K extends number>(keys: MaybeWatchSource<readonly K[]>): <T>(values: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [P in K]: T }>;
+export function useZipObj<K extends PropertyKey>(keys: MaybeWatchSource<readonly K[]>): <T>(values: MaybeWatchSource<readonly T[]>) => ComputedRef<{ [P in K]: T }>;
+export function useZipObj<T, K extends PropertyKey>(keys: MaybeWatchSource<readonly K[]>, values: MaybeWatchSource<readonly T[]>): ComputedRef<{ [P in K]: T }>;
+
 
 
 /**
@@ -6585,13 +6745,13 @@ export function useZipObj<K extends number>(keys: MaybeWatchSource<readonly K[]>
  */
 export function useZipWith<T, U, TResult>(
   fn: MaybeRef<(x: T, y: U) => TResult>,
-  list1: MaybeWatchSource<readonly T[]>,
-  list2: MaybeWatchSource<readonly U[]>,
-): ComputedRef<TResult[]>;
+): (list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly U[]>) => ComputedRef<TResult[]>;
 export function useZipWith<T, U, TResult>(
   fn: MaybeRef<(x: T, y: U) => TResult>,
   list1: MaybeWatchSource<readonly T[]>,
 ): (list2: MaybeWatchSource<readonly U[]>) => ComputedRef<TResult[]>;
 export function useZipWith<T, U, TResult>(
   fn: MaybeRef<(x: T, y: U) => TResult>,
-): (list1: MaybeWatchSource<readonly T[]>, list2: MaybeWatchSource<readonly U[]>) => ComputedRef<TResult[]>;
+  list1: MaybeWatchSource<readonly T[]>,
+  list2: MaybeWatchSource<readonly U[]>,
+): ComputedRef<TResult[]>;
